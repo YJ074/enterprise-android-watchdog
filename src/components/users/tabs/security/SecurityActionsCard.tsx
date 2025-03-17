@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { 
   LogOut, 
@@ -14,30 +15,62 @@ import {
   CardTitle 
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export function SecurityActionsCard() {
   const { toast } = useToast();
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   
   const handleSignOutAllDevices = () => {
-    toast({
-      title: "Signed out from all devices",
-      description: "You have been signed out from all other devices.",
-    });
+    setIsSigningOut(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setIsSigningOut(false);
+      toast({
+        title: "Signed out from all devices",
+        description: "You have been signed out from all other devices.",
+      });
+    }, 1000);
   };
   
   const handleResetSecurity = () => {
-    toast({
-      title: "Security settings reset",
-      description: "Your security settings have been reset to default.",
-    });
+    setIsResetting(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setIsResetting(false);
+      toast({
+        title: "Security settings reset",
+        description: "Your security settings have been reset to default.",
+      });
+    }, 1000);
   };
   
   const handleDeleteAccount = () => {
-    toast({
-      title: "Account deletion requested",
-      description: "Check your email for confirmation instructions.",
-      variant: "destructive",
-    });
+    setIsDeleting(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setIsDeleting(false);
+      toast({
+        title: "Account deletion requested",
+        description: "Check your email for confirmation instructions.",
+        variant: "destructive",
+      });
+    }, 1000);
   };
   
   return (
@@ -60,8 +93,13 @@ export function SecurityActionsCard() {
           <p className="text-sm text-muted-foreground mb-2">
             Sign out from all devices except your current one.
           </p>
-          <Button variant="outline" size="sm" onClick={handleSignOutAllDevices}>
-            Sign Out Devices
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleSignOutAllDevices}
+            disabled={isSigningOut}
+          >
+            {isSigningOut ? "Signing out..." : "Sign Out Devices"}
           </Button>
         </div>
         
@@ -73,8 +111,13 @@ export function SecurityActionsCard() {
           <p className="text-sm text-muted-foreground mb-2">
             Reset all security settings to their default values.
           </p>
-          <Button variant="outline" size="sm" onClick={handleResetSecurity}>
-            Reset Settings
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleResetSecurity}
+            disabled={isResetting}
+          >
+            {isResetting ? "Resetting..." : "Reset Settings"}
           </Button>
         </div>
         
@@ -86,9 +129,32 @@ export function SecurityActionsCard() {
           <p className="text-sm text-muted-foreground mb-2">
             Permanently delete your account and all associated data.
           </p>
-          <Button variant="destructive" size="sm" onClick={handleDeleteAccount}>
-            Delete Account
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm">
+                Delete Account
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete your account
+                  and remove your data from our servers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeleteAccount}
+                  disabled={isDeleting}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  {isDeleting ? "Deleting..." : "Delete Account"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </CardContent>
     </Card>
