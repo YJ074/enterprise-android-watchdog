@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 type User = {
@@ -11,6 +10,7 @@ type AuthContextType = {
   user: User | null;
   login: (user: User) => void;
   logout: () => void;
+  isLoading: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,16 +18,24 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     // Check localStorage for existing auth data on initial load
-    const storedAuth = localStorage.getItem("isAuthenticated");
-    const storedUser = localStorage.getItem("user");
+    const checkAuth = () => {
+      const storedAuth = localStorage.getItem("isAuthenticated");
+      const storedUser = localStorage.getItem("user");
+      
+      if (storedAuth === "true" && storedUser) {
+        setIsAuthenticated(true);
+        setUser(JSON.parse(storedUser));
+      }
+      
+      setIsLoading(false);
+    };
     
-    if (storedAuth === "true" && storedUser) {
-      setIsAuthenticated(true);
-      setUser(JSON.parse(storedUser));
-    }
+    // Simulate a slight delay to avoid flash of unauthenticated content
+    setTimeout(checkAuth, 300);
   }, []);
 
   const login = (userData: User) => {
@@ -42,10 +50,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("user");
+    // Keep the remembered username if it exists
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
