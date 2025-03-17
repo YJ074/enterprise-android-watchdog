@@ -7,7 +7,8 @@ import { metrics } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { DeviceListTable } from "../devices/DeviceListTable";
 import { Link } from "react-router-dom";
-import { AlertTriangle, Smartphone } from "lucide-react";
+import { AlertTriangle, Smartphone, Plus } from "lucide-react";
+import { AddDeviceDialog } from "../devices/AddDeviceDialog";
 
 export function Dashboard() {
   return (
@@ -27,6 +28,14 @@ export function Dashboard() {
               Manage Devices
             </Link>
           </Button>
+          <AddDeviceDialog 
+            trigger={
+              <Button variant="outline">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Device
+              </Button>
+            }
+          />
         </div>
       </div>
 
