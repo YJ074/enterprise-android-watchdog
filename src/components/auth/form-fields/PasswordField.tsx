@@ -21,16 +21,13 @@ export const PasswordField = ({ control, isLoading }: PasswordFieldProps) => {
   const [passwordStrength, setPasswordStrength] = useState(0);
 
   useEffect(() => {
-    const subscription = control._formState.touchedFields.password ? 
-      control._formValues.password && 
-      setPasswordStrength(calculatePasswordStrength(control._formValues.password as string)) : 
-      undefined;
+    // Check if password field is touched and has a value
+    if (control._formState.touchedFields.password && control._formValues.password) {
+      // Set password strength based on current password value
+      setPasswordStrength(calculatePasswordStrength(control._formValues.password as string));
+    }
     
-    return () => {
-      if (typeof subscription === 'function') {
-        subscription();
-      }
-    };
+    // No need for cleanup as we're not returning a subscription
   }, [control._formState.touchedFields.password, control._formValues.password]);
 
   return (
