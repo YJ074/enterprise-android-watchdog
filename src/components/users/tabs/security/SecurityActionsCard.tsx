@@ -1,24 +1,42 @@
 
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
-import { ShieldAlert, LockKeyhole, AlertCircle } from "lucide-react";
+import { 
+  LogOut, 
+  ShieldAlert, 
+  Trash2, 
+  AlertTriangle 
+} from "lucide-react";
 import { 
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle 
 } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 
 export function SecurityActionsCard() {
   const { toast } = useToast();
   
-  const handleLockAccount = () => {
+  const handleSignOutAllDevices = () => {
     toast({
-      title: "Account Locked",
-      description: "User account has been temporarily locked.",
-      duration: 3000,
+      title: "Signed out from all devices",
+      description: "You have been signed out from all other devices.",
+    });
+  };
+  
+  const handleResetSecurity = () => {
+    toast({
+      title: "Security settings reset",
+      description: "Your security settings have been reset to default.",
+    });
+  };
+  
+  const handleDeleteAccount = () => {
+    toast({
+      title: "Account deletion requested",
+      description: "Check your email for confirmation instructions.",
+      variant: "destructive",
     });
   };
   
@@ -30,39 +48,49 @@ export function SecurityActionsCard() {
           Security Actions
         </CardTitle>
         <CardDescription>
-          Additional account security measures.
+          Manage security settings and account access.
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-sm">Security questions:</span>
-            <span className="text-sm font-medium">Set (3)</span>
+      <CardContent className="space-y-4">
+        <div>
+          <div className="font-medium mb-1 flex items-center gap-2">
+            <LogOut className="h-4 w-4" />
+            Sign out all devices
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm">Recovery email:</span>
-            <span className="text-sm font-medium">Verified</span>
+          <p className="text-sm text-muted-foreground mb-2">
+            Sign out from all devices except your current one.
+          </p>
+          <Button variant="outline" size="sm" onClick={handleSignOutAllDevices}>
+            Sign Out Devices
+          </Button>
+        </div>
+        
+        <div>
+          <div className="font-medium mb-1 flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4" />
+            Reset security settings
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm">Trusted devices:</span>
-            <span className="text-sm font-medium">3 devices</span>
+          <p className="text-sm text-muted-foreground mb-2">
+            Reset all security settings to their default values.
+          </p>
+          <Button variant="outline" size="sm" onClick={handleResetSecurity}>
+            Reset Settings
+          </Button>
+        </div>
+        
+        <div>
+          <div className="font-medium mb-1 flex items-center gap-2 text-destructive">
+            <Trash2 className="h-4 w-4" />
+            Delete account
           </div>
+          <p className="text-sm text-muted-foreground mb-2">
+            Permanently delete your account and all associated data.
+          </p>
+          <Button variant="destructive" size="sm" onClick={handleDeleteAccount}>
+            Delete Account
+          </Button>
         </div>
       </CardContent>
-      <CardFooter className="flex gap-2 flex-col">
-        <Button 
-          variant="outline" 
-          className="w-full"
-          onClick={handleLockAccount}
-        >
-          <LockKeyhole className="h-4 w-4 mr-2" />
-          Lock Account
-        </Button>
-        <Button variant="destructive" className="w-full">
-          <AlertCircle className="h-4 w-4 mr-2" />
-          Security Audit
-        </Button>
-      </CardFooter>
     </Card>
   );
 }

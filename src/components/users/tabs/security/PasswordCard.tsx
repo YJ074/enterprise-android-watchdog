@@ -1,8 +1,8 @@
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
-import { Key } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Lock } from "lucide-react";
+import { useState } from "react";
 import { 
   Card,
   CardContent,
@@ -11,53 +11,127 @@ import {
   CardHeader,
   CardTitle 
 } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { useToast } from "@/components/ui/use-toast";
 
 export function PasswordCard() {
   const { toast } = useToast();
-  const [isPasswordResetSent, setIsPasswordResetSent] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   
-  const handlePasswordReset = () => {
-    setIsPasswordResetSent(true);
-    toast({
-      title: "Password Reset Email Sent",
-      description: "A password reset link has been sent to the user's email address.",
-      duration: 3000,
-    });
+  const form = useForm({
+    defaultValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
+  
+  const onSubmit = (data: any) => {
+    if (data.newPassword !== data.confirmPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "Please make sure your passwords match.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Simulate API call
+    setTimeout(() => {
+      toast({
+        title: "Password updated",
+        description: "Your password has been updated successfully.",
+      });
+      setIsEditing(false);
+      form.reset();
+    }, 1000);
   };
   
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Key className="h-5 w-5" />
-          Password Management
+          <Lock className="h-5 w-5" />
+          Password
         </CardTitle>
         <CardDescription>
-          Manage the user's password and recovery options.
+          Manage your account password.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-sm">Last password change:</span>
-            <span className="text-sm font-medium">30 days ago</span>
+        {isEditing ? (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="currentPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Current Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="newPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>New Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm New Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit">Save Changes</Button>
+              </div>
+            </form>
+          </Form>
+        ) : (
+          <div className="text-center py-6">
+            <p className="text-muted-foreground mb-4">
+              Password last changed: 2 months ago
+            </p>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm">Password strength:</span>
-            <span className="text-sm font-medium">Strong</span>
-          </div>
-        </div>
+        )}
       </CardContent>
-      <CardFooter>
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={handlePasswordReset}
-          disabled={isPasswordResetSent}
-        >
-          {isPasswordResetSent ? "Reset Link Sent" : "Reset Password"}
-        </Button>
-      </CardFooter>
+      {!isEditing && (
+        <CardFooter>
+          <Button variant="outline" className="w-full" onClick={() => setIsEditing(true)}>
+            Change Password
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 }

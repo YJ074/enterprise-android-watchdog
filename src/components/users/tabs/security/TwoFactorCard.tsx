@@ -1,8 +1,7 @@
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
-import { Shield } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
+import { useState } from "react";
 import { 
   Card,
   CardContent,
@@ -11,19 +10,35 @@ import {
   CardHeader,
   CardTitle 
 } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
+import { Switch } from "@/components/ui/switch";
 
 export function TwoFactorCard() {
   const { toast } = useToast();
-  const [is2FAEnabled, setIs2FAEnabled] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(false);
+  const [isSetupOpen, setIsSetupOpen] = useState(false);
   
-  const handle2FAToggle = () => {
-    setIs2FAEnabled(!is2FAEnabled);
+  const handleToggleTwoFactor = () => {
+    if (isEnabled) {
+      // Handle disabling
+      setIsEnabled(false);
+      toast({
+        title: "Two-factor authentication disabled",
+        description: "Your account is now less secure.",
+        variant: "destructive",
+      });
+    } else {
+      // Open setup flow
+      setIsSetupOpen(true);
+    }
+  };
+  
+  const handleSetupComplete = () => {
+    setIsEnabled(true);
+    setIsSetupOpen(false);
     toast({
-      title: is2FAEnabled ? "2FA Disabled" : "2FA Enabled",
-      description: is2FAEnabled 
-        ? "Two-factor authentication has been disabled for this account." 
-        : "Two-factor authentication has been enabled for this account.",
-      duration: 3000,
+      title: "Two-factor authentication enabled",
+      description: "Your account is now more secure.",
     });
   };
   
@@ -31,38 +46,55 @@ export function TwoFactorCard() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Shield className="h-5 w-5" />
+          <ShieldCheck className="h-5 w-5" />
           Two-Factor Authentication
         </CardTitle>
         <CardDescription>
-          Enable additional security for the user's account.
+          Add an extra layer of security to your account.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-sm">Status:</span>
-            <span className={`text-sm font-medium ${is2FAEnabled ? "text-green-600" : "text-red-600"}`}>
-              {is2FAEnabled ? "Enabled" : "Disabled"}
-            </span>
+        {isSetupOpen ? (
+          <div className="space-y-4">
+            <div className="border rounded-md p-4 text-center">
+              <p className="text-muted-foreground mb-2">Scan this QR code with your authenticator app</p>
+              <div className="inline-block bg-gray-200 w-32 h-32 mx-auto mb-2"></div>
+              <p className="text-xs text-muted-foreground">
+                Or enter code: ABCD-EFGH-IJKL-MNOP
+              </p>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsSetupOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSetupComplete}>
+                Complete Setup
+              </Button>
+            </div>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm">Method:</span>
-            <span className="text-sm font-medium">
-              {is2FAEnabled ? "Authenticator App" : "Not configured"}
-            </span>
+        ) : (
+          <div className="flex items-center justify-between py-2">
+            <div>
+              <div className="font-medium">
+                {isEnabled ? "Enabled" : "Disabled"}
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {isEnabled 
+                  ? "Your account is protected by two-factor authentication." 
+                  : "Your account is not using two-factor authentication."}
+              </p>
+            </div>
+            <Switch checked={isEnabled} onCheckedChange={handleToggleTwoFactor} />
           </div>
-        </div>
+        )}
       </CardContent>
-      <CardFooter>
-        <Button 
-          variant={is2FAEnabled ? "outline" : "default"} 
-          className="w-full"
-          onClick={handle2FAToggle}
-        >
-          {is2FAEnabled ? "Disable 2FA" : "Enable 2FA"}
-        </Button>
-      </CardFooter>
+      {!isSetupOpen && !isEnabled && (
+        <CardFooter>
+          <Button variant="outline" className="w-full" onClick={() => setIsSetupOpen(true)}>
+            Setup Two-Factor Authentication
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 }
