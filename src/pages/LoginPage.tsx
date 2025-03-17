@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,8 +10,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Eye, EyeOff, Lock, LogIn, User } from "lucide-react";
+import { Eye, EyeOff, Lock, LogIn, User, UserPlus, KeyRound } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/context/AuthContext";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -26,6 +27,7 @@ const LoginPage = () => {
   const [loginError, setLoginError] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login } = useAuth();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -42,9 +44,8 @@ const LoginPage = () => {
     try {
       // This is a demo login - in a real app, you would validate against a backend
       if (data.username === "admin" && data.password === "admin123") {
-        // Store auth state (this is simplified - use a proper auth solution in production)
-        localStorage.setItem("isAuthenticated", "true");
-        localStorage.setItem("user", JSON.stringify({ username: data.username, role: "admin" }));
+        // Login using the auth context
+        login({ username: data.username, role: "admin" });
         
         toast({
           title: "Login successful",
@@ -150,8 +151,22 @@ const LoginPage = () => {
             </form>
           </Form>
         </CardContent>
-        <CardFooter className="flex justify-center border-t p-4">
-          <p className="text-sm text-muted-foreground">
+        <CardFooter className="flex-col space-y-4 border-t p-4">
+          <div className="flex justify-between w-full">
+            <Link 
+              to="/forgot-password" 
+              className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
+            >
+              <KeyRound className="h-4 w-4" /> Forgot Password
+            </Link>
+            <Link 
+              to="/create-admin" 
+              className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
+            >
+              <UserPlus className="h-4 w-4" /> Create Admin Account
+            </Link>
+          </div>
+          <p className="text-sm text-muted-foreground text-center">
             Secure login for authorized personnel only
           </p>
         </CardFooter>
