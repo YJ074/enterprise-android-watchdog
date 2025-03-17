@@ -3,7 +3,7 @@ import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ActivityList } from "@/components/activity/ActivityList";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Download, Calendar, Filter } from "lucide-react";
+import { RefreshCw, Download, Calendar, Filter, Database, Archive } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
@@ -39,6 +39,13 @@ const ActivityPage = () => {
     });
   };
 
+  const handleArchive = () => {
+    toast({
+      title: "Archiving Data",
+      description: "Older activity logs are being archived...",
+    });
+  };
+
   const handleDateSelect = (date: Date | undefined) => {
     setDateRange(prev => {
       if (!prev.from) {
@@ -60,7 +67,7 @@ const ActivityPage = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Device Activity</h1>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline">
@@ -107,10 +114,16 @@ const ActivityPage = () => {
               </PopoverContent>
             </Popover>
 
+            <Button variant="outline" onClick={handleArchive}>
+              <Archive className="h-4 w-4 mr-2" />
+              Archive
+            </Button>
+
             <Button variant="outline" onClick={handleExport}>
               <Download className="h-4 w-4 mr-2" />
               Export
             </Button>
+            
             <Button variant="outline" onClick={handleRefresh}>
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
@@ -119,11 +132,13 @@ const ActivityPage = () => {
         </div>
 
         <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-4">
+          <TabsList className="mb-4 flex flex-wrap">
             <TabsTrigger value="all">All Activities</TabsTrigger>
             <TabsTrigger value="security">Security Events</TabsTrigger>
             <TabsTrigger value="system">System Events</TabsTrigger>
             <TabsTrigger value="user">User Actions</TabsTrigger>
+            <TabsTrigger value="communication">Communication</TabsTrigger>
+            <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
           </TabsList>
           
           <TabsContent value="all" className="rounded-md bg-white p-6 shadow-sm">
@@ -148,6 +163,20 @@ const ActivityPage = () => {
           </TabsContent>
           
           <TabsContent value="user" className="rounded-md bg-white p-6 shadow-sm">
+            <ActivityList 
+              activeTab={activeTab} 
+              dateRange={dateRange}
+            />
+          </TabsContent>
+          
+          <TabsContent value="communication" className="rounded-md bg-white p-6 shadow-sm">
+            <ActivityList 
+              activeTab={activeTab} 
+              dateRange={dateRange}
+            />
+          </TabsContent>
+          
+          <TabsContent value="monitoring" className="rounded-md bg-white p-6 shadow-sm">
             <ActivityList 
               activeTab={activeTab} 
               dateRange={dateRange}

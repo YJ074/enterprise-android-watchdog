@@ -22,11 +22,15 @@ import {
   MapPin,
   BarChart,
   PackageCheck,
-  AlertTriangle
+  AlertTriangle,
+  ActivityIcon,
+  Monitor
 } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/components/ui/use-toast";
 import { Link } from "react-router-dom";
+import { Input } from "@/components/ui/input";
+import { activityLogs } from "@/lib/mock-data";
 
 export function DeviceDetail() {
   const { id } = useParams<{ id: string }>();
@@ -70,6 +74,61 @@ export function DeviceDetail() {
       description: `${device.name} data has been refreshed.`,
       duration: 3000,
     });
+  };
+  
+  // Get device specific activities
+  const deviceActivities = activityLogs
+    .filter(log => log.deviceId === id)
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .slice(0, 10);
+
+  // Activity type functions
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case 'app_install':
+        return "📲";
+      case 'app_uninstall':
+        return "🗑️";
+      case 'login':
+        return "🔐";
+      case 'logout':
+        return "👋";
+      case 'location_change':
+        return "📍";
+      case 'policy_violation':
+        return "⚠️";
+      case 'system_update':
+        return "⬆️";
+      case 'whatsapp_message':
+        return "💬";
+      case 'gmail_access':
+        return "📧";
+      case 'call_recorded':
+        return "📞";
+      case 'screenshot':
+        return "📸";
+      case 'keylogger':
+        return "⌨️";
+      case 'browsing_history':
+        return "🌐";
+      case 'file_access':
+        return "📄";
+      default:
+        return "📱";
+    }
+  };
+
+  const getSeverityBadge = (severity: string) => {
+    switch (severity) {
+      case 'info':
+        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Info</Badge>;
+      case 'warning':
+        return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">Warning</Badge>;
+      case 'critical':
+        return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">Critical</Badge>;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -201,6 +260,7 @@ export function DeviceDetail() {
         <TabsList>
           <TabsTrigger value="apps">Applications</TabsTrigger>
           <TabsTrigger value="activity">Activity</TabsTrigger>
+          <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
           <TabsTrigger value="policies">Policies</TabsTrigger>
         </TabsList>
         <TabsContent value="apps" className="p-4 border rounded-md mt-2">
@@ -233,11 +293,134 @@ export function DeviceDetail() {
             ))}
           </div>
         </TabsContent>
+        
         <TabsContent value="activity" className="p-4 border rounded-md mt-2">
-          <p className="text-muted-foreground">Activity log will be displayed here.</p>
+          <div className="text-sm font-medium mb-4 flex items-center gap-2">
+            <ActivityIcon className="h-5 w-5 text-muted-foreground" />
+            Recent Activities
+          </div>
+          
+          <div className="mb-4">
+            <Input placeholder="Search activities..." className="w-full" />
+          </div>
+          
+          <div className="space-y-4">
+            {deviceActivities.length > 0 ? (
+              deviceActivities.map((activity) => (
+                <div key={activity.id} className="p-4 border rounded-md bg-muted/30">
+                  <div className="flex items-start gap-3">
+                    <div className="text-2xl">{getActivityIcon(activity.type)}</div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <h4 className="font-medium">{activity.details}</h4>
+                        {getSeverityBadge(activity.severity)}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {format(new Date(activity.timestamp), "PPp")}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-4 text-center text-muted-foreground">
+                No activity logs found for this device
+              </div>
+            )}
+          </div>
+          
+          <div className="mt-4 flex justify-end">
+            <Button asChild variant="outline">
+              <Link to="/activity">View All Activity</Link>
+            </Button>
+          </div>
         </TabsContent>
+        
+        <TabsContent value="monitoring" className="p-4 border rounded-md mt-2">
+          <div className="text-sm font-medium mb-4 flex items-center gap-2">
+            <Monitor className="h-5 w-5 text-muted-foreground" />
+            Monitoring Controls
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card>
+              <CardHeader className="py-3">
+                <CardTitle className="text-sm">Communication Monitoring</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span>WhatsApp Tracking</span>
+                    <Button variant="outline" size="sm">Configure</Button>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span>Gmail Monitoring</span>
+                    <Button variant="outline" size="sm">Configure</Button>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span>Call Recording</span>
+                    <Button variant="outline" size="sm">Configure</Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="py-3">
+                <CardTitle className="text-sm">Screen Monitoring</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span>Screenshot Interval</span>
+                    <Button variant="outline" size="sm">Configure</Button>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span>Keylogger</span>
+                    <Button variant="outline" size="sm">Configure</Button>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span>Browsing History</span>
+                    <Button variant="outline" size="sm">Configure</Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          <div className="mt-4">
+            <Button className="w-full">Enable All Monitoring</Button>
+          </div>
+        </TabsContent>
+        
         <TabsContent value="policies" className="p-4 border rounded-md mt-2">
-          <p className="text-muted-foreground">Device policies will be displayed here.</p>
+          <div className="text-sm font-medium mb-4 flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-muted-foreground" />
+            Device Policies
+          </div>
+          
+          <div className="grid grid-cols-1 gap-4">
+            <div className="p-4 border rounded-md bg-muted/30">
+              <h4 className="font-medium">Security Policy</h4>
+              <p className="text-sm text-muted-foreground mt-1">
+                Default security policies are applied to this device.
+              </p>
+            </div>
+            
+            <div className="p-4 border rounded-md bg-muted/30">
+              <h4 className="font-medium">Application Policy</h4>
+              <p className="text-sm text-muted-foreground mt-1">
+                Restricted application access is enabled.
+              </p>
+            </div>
+            
+            <div className="p-4 border rounded-md bg-muted/30">
+              <h4 className="font-medium">Data Policy</h4>
+              <p className="text-sm text-muted-foreground mt-1">
+                Data encryption and access controls are enabled.
+              </p>
+            </div>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

@@ -28,7 +28,7 @@ import {
 import { activityLogs } from "@/lib/mock-data";
 import { format, isWithinInterval } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { User, Shield, Monitor, Info, Eye } from "lucide-react";
+import { User, Shield, Monitor, Info, Eye, MessageSquare, Mail, PhoneCall, Globe, Clock, FileText } from "lucide-react";
 
 interface ActivityListProps {
   activeTab?: string;
@@ -42,10 +42,13 @@ export function ActivityList({ activeTab = "all", dateRange }: ActivityListProps
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [severityFilter, setSeverityFilter] = useState("all");
+  const [appFilter, setAppFilter] = useState("all");
+  const [durationFilter, setDurationFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [expandedLog, setExpandedLog] = useState<string | null>(null);
   const itemsPerPage = 10;
 
+  // Enhanced activity type mapping
   const getActivityIcon = (type: string) => {
     switch (type) {
       case 'app_install':
@@ -62,6 +65,20 @@ export function ActivityList({ activeTab = "all", dateRange }: ActivityListProps
         return "⚠️";
       case 'system_update':
         return "⬆️";
+      case 'whatsapp_message':
+        return "💬";
+      case 'gmail_access':
+        return "📧";
+      case 'call_recorded':
+        return "📞";
+      case 'screenshot':
+        return "📸";
+      case 'keylogger':
+        return "⌨️";
+      case 'browsing_history':
+        return "🌐";
+      case 'file_access':
+        return "📄";
       default:
         return "📱";
     }
@@ -77,8 +94,21 @@ export function ActivityList({ activeTab = "all", dateRange }: ActivityListProps
       case 'logout':
         return <User className="h-4 w-4" />;
       case 'policy_violation':
-        return <Shield className="h-4 w-4" />;
       case 'location_change':
+        return <Shield className="h-4 w-4" />;
+      case 'whatsapp_message':
+        return <MessageSquare className="h-4 w-4" />;
+      case 'gmail_access':
+        return <Mail className="h-4 w-4" />;
+      case 'call_recorded':
+        return <PhoneCall className="h-4 w-4" />;
+      case 'browsing_history':
+        return <Globe className="h-4 w-4" />;
+      case 'screenshot':
+      case 'keylogger':
+        return <Monitor className="h-4 w-4" />;
+      case 'file_access':
+        return <FileText className="h-4 w-4" />;
       default:
         return <Info className="h-4 w-4" />;
     }
@@ -96,9 +126,41 @@ export function ActivityList({ activeTab = "all", dateRange }: ActivityListProps
       case 'policy_violation':
       case 'location_change':
         return "security";
+      case 'whatsapp_message':
+      case 'gmail_access':
+      case 'call_recorded':
+        return "communication";
+      case 'screenshot':
+      case 'keylogger':
+      case 'browsing_history':
+      case 'file_access':
+        return "monitoring";
       default:
         return "other";
     }
+  };
+
+  const getAppNameFromDetails = (details: string) => {
+    const appMatches = details.match(/in (.*?)( on| at|$)/);
+    if (appMatches && appMatches[1]) {
+      return appMatches[1];
+    }
+    return null;
+  };
+
+  const getDurationFromDetails = (details: string) => {
+    const durationMatches = details.match(/for (\d+) (second|minute|hour|day)s?/);
+    if (durationMatches && durationMatches[1] && durationMatches[2]) {
+      return {
+        value: parseInt(durationMatches[1], 10),
+        unit: durationMatches[2]
+      };
+    }
+    return null;
+  };
+
+  const formatDuration = (duration: { value: number, unit: string }) => {
+    return `${duration.value} ${duration.unit}${duration.value !== 1 ? 's' : ''}`;
   };
 
   const getSeverityBadge = (severity: string) => {
@@ -114,6 +176,7 @@ export function ActivityList({ activeTab = "all", dateRange }: ActivityListProps
     }
   };
 
+  // Enhanced filtering logic
   const filteredLogs = activityLogs.filter(log => {
     // Filter by search term
     const matchesSearch = 
@@ -126,12 +189,53 @@ export function ActivityList({ activeTab = "all", dateRange }: ActivityListProps
     // Filter by severity
     const matchesSeverity = severityFilter === "all" || log.severity === severityFilter;
     
+    // Filter by app if applicable
+    let matchesApp = true;
+    if (appFilter !== "all") {
+      const appName = getAppNameFromDetails(log.details);
+      matchesApp = appName?.toLowerCase().includes(appFilter.toLowerCase()) || false;
+    }
+    
+    // Filter by duration if applicable
+    let matchesDuration = true;
+    if (durationFilter !== "all") {
+      const duration = getDurationFromDetails(log.details);
+      
+      if (durationFilter === "short" && duration) {
+        matchesDuration = 
+          (duration.unit === "second") || 
+          (duration.unit === "minute" && duration.value <= 5);
+      } else if (durationFilter === "medium" && duration) {
+        matchesDuration = 
+          (duration.unit === "minute" && duration.value > 5 && duration.value <= 30) ||
+          (duration.unit === "hour" && duration.value === 1);
+      } else if (durationFilter === "long" && duration) {
+        matchesDuration = 
+          (duration.unit === "hour" && duration.value > 1) ||
+          (duration.unit === "day");
+      } else if (!duration) {
+        matchesDuration = false;
+      }
+    }
+    
     // Filter by tab
-    const matchesTab = 
-      activeTab === "all" || 
-      (activeTab === "security" && (log.type === "policy_violation" || log.type === "location_change")) ||
-      (activeTab === "system" && (log.type === "app_install" || log.type === "app_uninstall" || log.type === "system_update")) ||
-      (activeTab === "user" && (log.type === "login" || log.type === "logout"));
+    let matchesTab = activeTab === "all";
+    
+    if (!matchesTab) {
+      const category = getActivityCategory(log.type);
+      
+      if (activeTab === "security" && category === "security") {
+        matchesTab = true;
+      } else if (activeTab === "system" && category === "system") {
+        matchesTab = true;
+      } else if (activeTab === "user" && category === "user") {
+        matchesTab = true;
+      } else if (activeTab === "communication" && category === "communication") {
+        matchesTab = true;
+      } else if (activeTab === "monitoring" && category === "monitoring") {
+        matchesTab = true;
+      }
+    }
     
     // Filter by date range
     let matchesDateRange = true;
@@ -146,7 +250,7 @@ export function ActivityList({ activeTab = "all", dateRange }: ActivityListProps
       matchesDateRange = logDate >= dateRange.from;
     }
     
-    return matchesSearch && matchesType && matchesSeverity && matchesTab && matchesDateRange;
+    return matchesSearch && matchesType && matchesSeverity && matchesTab && matchesDateRange && matchesApp && matchesDuration;
   });
   
   // Calculate pagination
@@ -156,10 +260,19 @@ export function ActivityList({ activeTab = "all", dateRange }: ActivityListProps
     page * itemsPerPage
   );
 
+  // Collect unique app names for filter
+  const uniqueApps = new Set<string>();
+  activityLogs.forEach(log => {
+    const appName = getAppNameFromDetails(log.details);
+    if (appName) {
+      uniqueApps.add(appName);
+    }
+  });
+
   // Reset page when filters change
   useEffect(() => {
     setPage(1);
-  }, [searchTerm, typeFilter, severityFilter, activeTab, dateRange]);
+  }, [searchTerm, typeFilter, severityFilter, appFilter, durationFilter, activeTab, dateRange]);
 
   return (
     <div className="space-y-4">
@@ -172,7 +285,7 @@ export function ActivityList({ activeTab = "all", dateRange }: ActivityListProps
             className="w-full"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Select value={typeFilter} onValueChange={setTypeFilter}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Filter by type" />
@@ -186,6 +299,13 @@ export function ActivityList({ activeTab = "all", dateRange }: ActivityListProps
               <SelectItem value="location_change">Location Change</SelectItem>
               <SelectItem value="policy_violation">Policy Violation</SelectItem>
               <SelectItem value="system_update">System Update</SelectItem>
+              <SelectItem value="whatsapp_message">WhatsApp Message</SelectItem>
+              <SelectItem value="gmail_access">Gmail Access</SelectItem>
+              <SelectItem value="call_recorded">Call Recording</SelectItem>
+              <SelectItem value="screenshot">Screenshot</SelectItem>
+              <SelectItem value="keylogger">Keylogger</SelectItem>
+              <SelectItem value="browsing_history">Browsing History</SelectItem>
+              <SelectItem value="file_access">File Access</SelectItem>
             </SelectContent>
           </Select>
           
@@ -198,6 +318,30 @@ export function ActivityList({ activeTab = "all", dateRange }: ActivityListProps
               <SelectItem value="info">Info</SelectItem>
               <SelectItem value="warning">Warning</SelectItem>
               <SelectItem value="critical">Critical</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Select value={appFilter} onValueChange={setAppFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by application" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Applications</SelectItem>
+              {Array.from(uniqueApps).map(app => (
+                <SelectItem key={app} value={app}>{app}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          <Select value={durationFilter} onValueChange={setDurationFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by duration" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Durations</SelectItem>
+              <SelectItem value="short">Short (< 5 min)</SelectItem>
+              <SelectItem value="medium">Medium (5-30 min)</SelectItem>
+              <SelectItem value="long">Long (> 30 min)</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -255,6 +399,17 @@ export function ActivityList({ activeTab = "all", dateRange }: ActivityListProps
                               <p><strong>Type:</strong> {log.type}</p>
                               <p><strong>Category:</strong> {getActivityCategory(log.type)}</p>
                               <p><strong>Severity:</strong> {log.severity}</p>
+                              {log.type === 'call_recorded' && (
+                                <p><strong>Duration:</strong> {getDurationFromDetails(log.details) ? 
+                                  formatDuration(getDurationFromDetails(log.details)!) : 'N/A'}</p>
+                              )}
+                              {log.type === 'whatsapp_message' && (
+                                <>
+                                  <p><strong>Contact:</strong> {log.details.match(/with (.*?)( at|$)/) ? 
+                                    log.details.match(/with (.*?)( at|$)/)![1] : 'Unknown'}</p>
+                                  <p><strong>Direction:</strong> {log.details.includes('sent to') ? 'Outgoing' : 'Incoming'}</p>
+                                </>
+                              )}
                             </div>
                           </div>
                           <div>
@@ -262,6 +417,14 @@ export function ActivityList({ activeTab = "all", dateRange }: ActivityListProps
                             <div className="text-sm">
                               <p><strong>Device ID:</strong> {log.deviceId}</p>
                               <p><strong>Timestamp:</strong> {format(new Date(log.timestamp), "PPpp")}</p>
+                              {getAppNameFromDetails(log.details) && (
+                                <p><strong>Application:</strong> {getAppNameFromDetails(log.details)}</p>
+                              )}
+                              {log.type === 'browsing_history' && (
+                                <p><strong>Browser:</strong> {log.details.includes('Chrome') ? 'Chrome' : 
+                                  log.details.includes('Firefox') ? 'Firefox' : 
+                                  log.details.includes('Safari') ? 'Safari' : 'Unknown'}</p>
+                              )}
                             </div>
                           </div>
                           <div>
@@ -273,6 +436,14 @@ export function ActivityList({ activeTab = "all", dateRange }: ActivityListProps
                                 : log.severity === 'warning' 
                                   ? 'Yes - Review when possible' 
                                   : 'No action required'}</p>
+                              {(log.type === 'screenshot' || log.type === 'call_recorded') && (
+                                <div className="mt-2">
+                                  <Button variant="outline" size="sm">
+                                    <Eye className="h-4 w-4 mr-2" />
+                                    View Content
+                                  </Button>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
