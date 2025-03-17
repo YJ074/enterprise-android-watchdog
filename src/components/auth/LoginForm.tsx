@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Eye, EyeOff, Lock, User, KeyRound, UserPlus, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, Lock, User, LogIn, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PasswordStrengthIndicator } from "./PasswordStrengthIndicator";
 import { calculatePasswordStrength } from "@/utils/authUtils";
