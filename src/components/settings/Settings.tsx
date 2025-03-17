@@ -6,6 +6,7 @@ import { NotificationSettings } from "./tabs/NotificationSettings";
 import { SecuritySettings } from "./tabs/SecuritySettings";
 import { ApiSettings } from "./tabs/ApiSettings";
 import { EnterpriseSettings } from "./tabs/EnterpriseSettings";
+import { MonitoringSettings } from "./tabs/MonitoringSettings";
 
 export function Settings() {
   const [activeTab, setActiveTab] = useState("general");
@@ -24,6 +25,7 @@ export function Settings() {
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
+          <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
           <TabsTrigger value="api">API & Integrations</TabsTrigger>
           <TabsTrigger value="enterprise">Enterprise</TabsTrigger>
         </TabsList>
@@ -38,6 +40,10 @@ export function Settings() {
         
         <TabsContent value="security" className="space-y-4">
           <SecuritySettings />
+        </TabsContent>
+        
+        <TabsContent value="monitoring" className="space-y-4">
+          <MonitoringSettings />
         </TabsContent>
         
         <TabsContent value="api" className="space-y-4">
