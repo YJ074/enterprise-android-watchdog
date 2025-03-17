@@ -339,9 +339,9 @@ export function ActivityList({ activeTab = "all", dateRange }: ActivityListProps
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Durations</SelectItem>
-              <SelectItem value="short">Short (< 5 min)</SelectItem>
+              <SelectItem value="short">Short (&lt; 5 min)</SelectItem>
               <SelectItem value="medium">Medium (5-30 min)</SelectItem>
-              <SelectItem value="long">Long (> 30 min)</SelectItem>
+              <SelectItem value="long">Long (&gt; 30 min)</SelectItem>
             </SelectContent>
           </Select>
         </div>
