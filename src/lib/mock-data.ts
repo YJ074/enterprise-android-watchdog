@@ -33,7 +33,9 @@ export interface ActivityLog {
   id: string;
   deviceId: string;
   timestamp: string;
-  type: 'app_install' | 'app_uninstall' | 'login' | 'logout' | 'location_change' | 'policy_violation' | 'system_update';
+  type: 'app_install' | 'app_uninstall' | 'login' | 'logout' | 'location_change' | 
+        'policy_violation' | 'system_update' | 'whatsapp_message' | 'gmail_access' | 
+        'call_recorded' | 'screenshot' | 'keylogger' | 'browsing_history' | 'file_access';
   details: string;
   severity: 'info' | 'warning' | 'critical';
 }
@@ -238,6 +240,63 @@ export const activityLogs: ActivityLog[] = [
     type: "app_uninstall",
     details: "Uninstalled application: WhatsApp",
     severity: "info"
+  },
+  // Let's add some example entries for our new activity types
+  {
+    id: "log-008",
+    deviceId: "dev-001",
+    timestamp: "2023-10-15T10:15:00",
+    type: "whatsapp_message",
+    details: "WhatsApp message sent to John Doe at 10:15 AM",
+    severity: "info"
+  },
+  {
+    id: "log-009",
+    deviceId: "dev-003",
+    timestamp: "2023-10-15T11:30:00",
+    type: "gmail_access",
+    details: "Gmail account accessed in Chrome browser",
+    severity: "info"
+  },
+  {
+    id: "log-010",
+    deviceId: "dev-005",
+    timestamp: "2023-10-15T12:45:00",
+    type: "call_recorded",
+    details: "Phone call recorded with +1-555-123-4567 for 15 minutes",
+    severity: "info"
+  },
+  {
+    id: "log-011",
+    deviceId: "dev-002",
+    timestamp: "2023-10-15T13:20:00",
+    type: "screenshot",
+    details: "Screenshot captured while using Facebook app",
+    severity: "info"
+  },
+  {
+    id: "log-012",
+    deviceId: "dev-004",
+    timestamp: "2023-10-15T14:10:00",
+    type: "keylogger",
+    details: "Keystrokes recorded in password field on banking website",
+    severity: "warning"
+  },
+  {
+    id: "log-013",
+    deviceId: "dev-001",
+    timestamp: "2023-10-15T15:05:00",
+    type: "browsing_history",
+    details: "Visited restricted website in Chrome browser",
+    severity: "warning"
+  },
+  {
+    id: "log-014",
+    deviceId: "dev-003",
+    timestamp: "2023-10-15T16:30:00",
+    type: "file_access",
+    details: "Accessed confidential company document from Downloads folder",
+    severity: "critical"
   }
 ];
 
