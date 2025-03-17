@@ -12,6 +12,7 @@ import AlertsPage from "./pages/AlertsPage";
 import ActivityPage from "./pages/ActivityPage";
 import UserDetailPage from "./pages/UserDetailPage";
 import UsersPage from "./pages/UsersPage";
+import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/activity" element={<ActivityPage />} />
             <Route path="/users" element={<UsersPage />} />
             <Route path="/user/:id" element={<UserDetailPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
