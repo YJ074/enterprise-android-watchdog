@@ -3,7 +3,7 @@ import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ActivityList } from "@/components/activity/ActivityList";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Download, Calendar, Filter, Database, Archive } from "lucide-react";
+import { RefreshCw, Download, Calendar, Filter, Database, Archive, FileAudio } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
@@ -139,6 +139,7 @@ const ActivityPage = () => {
             <TabsTrigger value="user">User Actions</TabsTrigger>
             <TabsTrigger value="communication">Communication</TabsTrigger>
             <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
+            <TabsTrigger value="multimedia">Multimedia</TabsTrigger>
           </TabsList>
           
           <TabsContent value="all" className="rounded-md bg-white p-6 shadow-sm">
@@ -177,6 +178,13 @@ const ActivityPage = () => {
           </TabsContent>
           
           <TabsContent value="monitoring" className="rounded-md bg-white p-6 shadow-sm">
+            <ActivityList 
+              activeTab={activeTab} 
+              dateRange={dateRange}
+            />
+          </TabsContent>
+          
+          <TabsContent value="multimedia" className="rounded-md bg-white p-6 shadow-sm">
             <ActivityList 
               activeTab={activeTab} 
               dateRange={dateRange}

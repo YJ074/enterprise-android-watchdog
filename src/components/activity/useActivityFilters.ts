@@ -32,7 +32,8 @@ export function useActivityFilters(logs: ActivityLog[], activeTab: string, dateR
     // Filter by search term
     const matchesSearch = 
       log.details.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.deviceId.toLowerCase().includes(searchTerm.toLowerCase());
+      log.deviceId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (log.metadata?.fileType && log.metadata.fileType.toLowerCase().includes(searchTerm.toLowerCase()));
     
     // Filter by type
     const matchesType = typeFilter === "all" || log.type === typeFilter;
@@ -50,22 +51,42 @@ export function useActivityFilters(logs: ActivityLog[], activeTab: string, dateR
     // Filter by duration if applicable
     let matchesDuration = true;
     if (durationFilter !== "all") {
-      const duration = getDurationFromDetails(log.details);
+      // Check both duration from details and metadata
+      const durationFromDetails = getDurationFromDetails(log.details);
+      const durationFromMetadata = log.metadata?.duration;
       
-      if (durationFilter === "short" && duration) {
-        matchesDuration = 
-          (duration.unit === "second") || 
-          (duration.unit === "minute" && duration.value <= 5);
-      } else if (durationFilter === "medium" && duration) {
-        matchesDuration = 
-          (duration.unit === "minute" && duration.value > 5 && duration.value <= 30) ||
-          (duration.unit === "hour" && duration.value === 1);
-      } else if (durationFilter === "long" && duration) {
-        matchesDuration = 
-          (duration.unit === "hour" && duration.value > 1) ||
-          (duration.unit === "day");
-      } else if (!duration) {
-        matchesDuration = false;
+      let hasDuration = false;
+      let isShort = false;
+      let isMedium = false;
+      let isLong = false;
+      
+      if (durationFromDetails) {
+        hasDuration = true;
+        isShort = 
+          (durationFromDetails.unit === "second") || 
+          (durationFromDetails.unit === "minute" && durationFromDetails.value <= 5);
+        isMedium = 
+          (durationFromDetails.unit === "minute" && durationFromDetails.value > 5 && durationFromDetails.value <= 30) ||
+          (durationFromDetails.unit === "hour" && durationFromDetails.value === 1);
+        isLong = 
+          (durationFromDetails.unit === "hour" && durationFromDetails.value > 1) ||
+          (durationFromDetails.unit === "day");
+      } else if (durationFromMetadata) {
+        hasDuration = true;
+        const durationInSeconds = durationFromMetadata;
+        isShort = durationInSeconds <= 300; // 5 minutes
+        isMedium = durationInSeconds > 300 && durationInSeconds <= 1800; // 5-30 minutes
+        isLong = durationInSeconds > 1800; // > 30 minutes
+      }
+      
+      if (durationFilter === "short") {
+        matchesDuration = hasDuration && isShort;
+      } else if (durationFilter === "medium") {
+        matchesDuration = hasDuration && isMedium;
+      } else if (durationFilter === "long") {
+        matchesDuration = hasDuration && isLong;
+      } else {
+        matchesDuration = hasDuration;
       }
     }
     
@@ -84,6 +105,8 @@ export function useActivityFilters(logs: ActivityLog[], activeTab: string, dateR
       } else if (activeTab === "communication" && category === "communication") {
         matchesTab = true;
       } else if (activeTab === "monitoring" && category === "monitoring") {
+        matchesTab = true;
+      } else if (activeTab === "multimedia" && category === "multimedia") {
         matchesTab = true;
       }
     }

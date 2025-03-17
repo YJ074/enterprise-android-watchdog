@@ -1,4 +1,3 @@
-
 export interface Device {
   id: string;
   name: string;
@@ -35,9 +34,18 @@ export interface ActivityLog {
   timestamp: string;
   type: 'app_install' | 'app_uninstall' | 'login' | 'logout' | 'location_change' | 
         'policy_violation' | 'system_update' | 'whatsapp_message' | 'gmail_access' | 
-        'call_recorded' | 'screenshot' | 'keylogger' | 'browsing_history' | 'file_access';
+        'call_recorded' | 'screenshot' | 'keylogger' | 'browsing_history' | 'file_access' |
+        'audio_recording' | 'video_recording' | 'photo_captured' | 'media_shared' | 'file_downloaded';
   details: string;
   severity: 'info' | 'warning' | 'critical';
+  metadata?: {
+    fileType?: string;
+    fileSize?: number;
+    duration?: number;
+    location?: string;
+    destination?: string;
+    thumbnail?: string;
+  };
 }
 
 export interface MetricData {
@@ -297,6 +305,74 @@ export const activityLogs: ActivityLog[] = [
     type: "file_access",
     details: "Accessed confidential company document from Downloads folder",
     severity: "critical"
+  },
+  {
+    id: "log-015",
+    deviceId: "dev-001",
+    timestamp: "2023-10-15T17:20:00",
+    type: "audio_recording",
+    details: "Voice recording created in Voice Recorder app",
+    severity: "info",
+    metadata: {
+      fileType: "mp3",
+      fileSize: 1.2,
+      duration: 45,
+      location: "Internal Storage/Recordings"
+    }
+  },
+  {
+    id: "log-016",
+    deviceId: "dev-002",
+    timestamp: "2023-10-15T18:10:00",
+    type: "video_recording",
+    details: "Video recorded using Camera app",
+    severity: "info",
+    metadata: {
+      fileType: "mp4",
+      fileSize: 25.7,
+      duration: 118,
+      location: "Internal Storage/DCIM/Camera"
+    }
+  },
+  {
+    id: "log-017",
+    deviceId: "dev-003",
+    timestamp: "2023-10-15T19:05:00",
+    type: "photo_captured",
+    details: "Photo taken using Camera app",
+    severity: "info",
+    metadata: {
+      fileType: "jpg",
+      fileSize: 3.5,
+      location: "Internal Storage/DCIM/Camera"
+    }
+  },
+  {
+    id: "log-018",
+    deviceId: "dev-001",
+    timestamp: "2023-10-15T20:15:00",
+    type: "media_shared",
+    details: "Video shared via WhatsApp",
+    severity: "warning",
+    metadata: {
+      fileType: "mp4",
+      fileSize: 15.3,
+      destination: "Contact: Sarah Johnson",
+      location: "Internal Storage/WhatsApp/Media"
+    }
+  },
+  {
+    id: "log-019",
+    deviceId: "dev-005",
+    timestamp: "2023-10-15T21:30:00",
+    type: "file_downloaded",
+    details: "PDF document downloaded from Chrome browser",
+    severity: "warning",
+    metadata: {
+      fileType: "pdf",
+      fileSize: 8.2,
+      location: "Internal Storage/Download"
+    }
   }
 ];
 

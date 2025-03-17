@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Eye } from "lucide-react";
+import { Eye, Download, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { format } from "date-fns";
@@ -12,8 +12,12 @@ import {
   getAppNameFromDetails,
   getDurationFromDetails, 
   formatDuration, 
+  formatFileSize,
+  formatMediaDuration,
   getSeverityBadge 
 } from "./utils/activityHelpers";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 interface ActivityLogItemProps {
   log: ActivityLog;
@@ -23,6 +27,19 @@ interface ActivityLogItemProps {
 
 export function ActivityLogItem({ log, expandedLog, onToggleExpand }: ActivityLogItemProps) {
   const isExpanded = expandedLog === log.id;
+  const isMultimedia = ['audio_recording', 'video_recording', 'photo_captured', 'media_shared', 'file_downloaded'].includes(log.type);
+  
+  const handleViewContent = () => {
+    toast.info("Viewing content...", {
+      description: `Opening ${log.type.replace('_', ' ')} content`,
+    });
+  };
+  
+  const handleDownloadContent = () => {
+    toast.success("Content downloaded", {
+      description: `${log.type.replace('_', ' ')} content has been downloaded`,
+    });
+  };
   
   return (
     <>
@@ -58,7 +75,7 @@ export function ActivityLogItem({ log, expandedLog, onToggleExpand }: ActivityLo
               <div>
                 <h4 className="text-sm font-medium mb-1">Event Details</h4>
                 <div className="text-sm">
-                  <p><strong>Type:</strong> {log.type}</p>
+                  <p><strong>Type:</strong> {log.type.replace(/_/g, ' ')}</p>
                   <p><strong>Category:</strong> {getActivityCategory(log.type)}</p>
                   <p><strong>Severity:</strong> {log.severity}</p>
                   {log.type === 'call_recorded' && (
@@ -70,6 +87,19 @@ export function ActivityLogItem({ log, expandedLog, onToggleExpand }: ActivityLo
                       <p><strong>Contact:</strong> {log.details.match(/with (.*?)( at|$)/) ? 
                         log.details.match(/with (.*?)( at|$)/)![1] : 'Unknown'}</p>
                       <p><strong>Direction:</strong> {log.details.includes('sent to') ? 'Outgoing' : 'Incoming'}</p>
+                    </>
+                  )}
+                  {isMultimedia && log.metadata && (
+                    <>
+                      {log.metadata.fileType && (
+                        <p><strong>File Type:</strong> {log.metadata.fileType.toUpperCase()}</p>
+                      )}
+                      {log.metadata.fileSize && (
+                        <p><strong>File Size:</strong> {formatFileSize(log.metadata.fileSize)}</p>
+                      )}
+                      {log.metadata.duration && (
+                        <p><strong>Duration:</strong> {formatMediaDuration(log.metadata.duration)}</p>
+                      )}
                     </>
                   )}
                 </div>
@@ -87,6 +117,12 @@ export function ActivityLogItem({ log, expandedLog, onToggleExpand }: ActivityLo
                       log.details.includes('Firefox') ? 'Firefox' : 
                       log.details.includes('Safari') ? 'Safari' : 'Unknown'}</p>
                   )}
+                  {isMultimedia && log.metadata && log.metadata.location && (
+                    <p><strong>Storage Location:</strong> {log.metadata.location}</p>
+                  )}
+                  {log.type === 'media_shared' && log.metadata && log.metadata.destination && (
+                    <p><strong>Shared With:</strong> {log.metadata.destination}</p>
+                  )}
                 </div>
               </div>
               <div>
@@ -98,9 +134,27 @@ export function ActivityLogItem({ log, expandedLog, onToggleExpand }: ActivityLo
                     : log.severity === 'warning' 
                       ? 'Yes - Review when possible' 
                       : 'No action required'}</p>
-                  {(log.type === 'screenshot' || log.type === 'call_recorded') && (
+                  
+                  {isMultimedia && (
+                    <div className="mt-2 flex gap-2">
+                      <Button variant="outline" size="sm" onClick={handleViewContent}>
+                        {log.type === 'audio_recording' || log.type === 'video_recording' ? (
+                          <Play className="h-4 w-4 mr-2" />
+                        ) : (
+                          <Eye className="h-4 w-4 mr-2" />
+                        )}
+                        View Content
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={handleDownloadContent}>
+                        <Download className="h-4 w-4 mr-2" />
+                        Download
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {(log.type === 'screenshot' || log.type === 'call_recorded') && !isMultimedia && (
                     <div className="mt-2">
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={handleViewContent}>
                         <Eye className="h-4 w-4 mr-2" />
                         View Content
                       </Button>

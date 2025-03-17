@@ -1,4 +1,3 @@
-
 import { ReactNode } from "react";
 import { 
   User, 
@@ -9,7 +8,12 @@ import {
   Mail, 
   PhoneCall, 
   Globe, 
-  FileText 
+  FileText,
+  FileAudio,
+  FileVideo,
+  FileImage,
+  Share2,
+  Download
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -44,6 +48,16 @@ export const getActivityIcon = (type: string): string => {
       return "🌐";
     case 'file_access':
       return "📄";
+    case 'audio_recording':
+      return "🎙️";
+    case 'video_recording':
+      return "🎥";
+    case 'photo_captured':
+      return "📷";
+    case 'media_shared':
+      return "↗️";
+    case 'file_downloaded':
+      return "⬇️";
     default:
       return "📱";
   }
@@ -75,6 +89,16 @@ export const getActivityCategoryIcon = (type: string): ReactNode => {
       return <Monitor className="h-4 w-4" />;
     case 'file_access':
       return <FileText className="h-4 w-4" />;
+    case 'audio_recording':
+      return <FileAudio className="h-4 w-4" />;
+    case 'video_recording':
+      return <FileVideo className="h-4 w-4" />;
+    case 'photo_captured':
+      return <FileImage className="h-4 w-4" />;
+    case 'media_shared':
+      return <Share2 className="h-4 w-4" />;
+    case 'file_downloaded':
+      return <Download className="h-4 w-4" />;
     default:
       return <Info className="h-4 w-4" />;
   }
@@ -102,6 +126,12 @@ export const getActivityCategory = (type: string): string => {
     case 'browsing_history':
     case 'file_access':
       return "monitoring";
+    case 'audio_recording':
+    case 'video_recording':
+    case 'photo_captured':
+    case 'media_shared':
+    case 'file_downloaded':
+      return "multimedia";
     default:
       return "other";
   }
@@ -131,6 +161,24 @@ export const getDurationFromDetails = (details: string): { value: number, unit: 
 // Format duration for display
 export const formatDuration = (duration: { value: number, unit: string }): string => {
   return `${duration.value} ${duration.unit}${duration.value !== 1 ? 's' : ''}`;
+};
+
+// Format file size for display
+export const formatFileSize = (sizeInMB: number): string => {
+  if (sizeInMB < 1) {
+    return `${(sizeInMB * 1024).toFixed(0)} KB`;
+  } else if (sizeInMB >= 1000) {
+    return `${(sizeInMB / 1024).toFixed(2)} GB`;
+  } else {
+    return `${sizeInMB.toFixed(1)} MB`;
+  }
+};
+
+// Format duration in seconds to mm:ss format
+export const formatMediaDuration = (seconds: number): string => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
 
 // Get severity badge component
