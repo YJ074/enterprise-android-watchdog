@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Table, 
   TableHeader, 
@@ -17,13 +17,34 @@ import {
   SelectTrigger,
   SelectValue, 
 } from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { activityLogs } from "@/lib/mock-data";
-import { format } from "date-fns";
+import { format, isWithinInterval } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { User, Shield, Monitor, Info, Eye } from "lucide-react";
 
-export function ActivityList() {
+interface ActivityListProps {
+  activeTab?: string;
+  dateRange?: {
+    from: Date | undefined;
+    to: Date | undefined;
+  };
+}
+
+export function ActivityList({ activeTab = "all", dateRange }: ActivityListProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [severityFilter, setSeverityFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const [expandedLog, setExpandedLog] = useState<string | null>(null);
+  const itemsPerPage = 10;
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -46,6 +67,40 @@ export function ActivityList() {
     }
   };
 
+  const getActivityCategoryIcon = (type: string) => {
+    switch (type) {
+      case 'app_install':
+      case 'app_uninstall':
+      case 'system_update':
+        return <Monitor className="h-4 w-4" />;
+      case 'login':
+      case 'logout':
+        return <User className="h-4 w-4" />;
+      case 'policy_violation':
+        return <Shield className="h-4 w-4" />;
+      case 'location_change':
+      default:
+        return <Info className="h-4 w-4" />;
+    }
+  };
+
+  const getActivityCategory = (type: string) => {
+    switch (type) {
+      case 'app_install':
+      case 'app_uninstall':
+      case 'system_update':
+        return "system";
+      case 'login':
+      case 'logout':
+        return "user";
+      case 'policy_violation':
+      case 'location_change':
+        return "security";
+      default:
+        return "other";
+    }
+  };
+
   const getSeverityBadge = (severity: string) => {
     switch (severity) {
       case 'info':
@@ -60,15 +115,51 @@ export function ActivityList() {
   };
 
   const filteredLogs = activityLogs.filter(log => {
+    // Filter by search term
     const matchesSearch = 
       log.details.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.deviceId.toLowerCase().includes(searchTerm.toLowerCase());
     
+    // Filter by type
     const matchesType = typeFilter === "all" || log.type === typeFilter;
+    
+    // Filter by severity
     const matchesSeverity = severityFilter === "all" || log.severity === severityFilter;
     
-    return matchesSearch && matchesType && matchesSeverity;
+    // Filter by tab
+    const matchesTab = 
+      activeTab === "all" || 
+      (activeTab === "security" && (log.type === "policy_violation" || log.type === "location_change")) ||
+      (activeTab === "system" && (log.type === "app_install" || log.type === "app_uninstall" || log.type === "system_update")) ||
+      (activeTab === "user" && (log.type === "login" || log.type === "logout"));
+    
+    // Filter by date range
+    let matchesDateRange = true;
+    if (dateRange?.from && dateRange?.to) {
+      const logDate = new Date(log.timestamp);
+      matchesDateRange = isWithinInterval(logDate, {
+        start: dateRange.from,
+        end: dateRange.to
+      });
+    } else if (dateRange?.from) {
+      const logDate = new Date(log.timestamp);
+      matchesDateRange = logDate >= dateRange.from;
+    }
+    
+    return matchesSearch && matchesType && matchesSeverity && matchesTab && matchesDateRange;
   });
+  
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
+  const paginatedLogs = filteredLogs.slice(
+    (page - 1) * itemsPerPage,
+    page * itemsPerPage
+  );
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, typeFilter, severityFilter, activeTab, dateRange]);
 
   return (
     <div className="space-y-4">
@@ -118,33 +209,136 @@ export function ActivityList() {
             <TableRow>
               <TableHead></TableHead>
               <TableHead>Device ID</TableHead>
+              <TableHead className="hidden md:table-cell">Category</TableHead>
               <TableHead>Activity</TableHead>
-              <TableHead>Severity</TableHead>
-              <TableHead>Timestamp</TableHead>
+              <TableHead className="hidden md:table-cell">Severity</TableHead>
+              <TableHead className="hidden md:table-cell">Timestamp</TableHead>
+              <TableHead className="w-[70px]"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredLogs.length > 0 ? (
-              filteredLogs.map((log) => (
-                <TableRow key={log.id}>
-                  <TableCell className="font-medium text-xl">{getActivityIcon(log.type)}</TableCell>
-                  <TableCell>{log.deviceId}</TableCell>
-                  <TableCell className="max-w-md">{log.details}</TableCell>
-                  <TableCell>{getSeverityBadge(log.severity)}</TableCell>
-                  <TableCell className="text-sm text-gray-500">
-                    {format(new Date(log.timestamp), "PPp")}
-                  </TableCell>
-                </TableRow>
+            {paginatedLogs.length > 0 ? (
+              paginatedLogs.map((log) => (
+                <>
+                  <TableRow key={log.id}>
+                    <TableCell className="font-medium text-xl">{getActivityIcon(log.type)}</TableCell>
+                    <TableCell>{log.deviceId}</TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      <div className="flex items-center gap-1">
+                        {getActivityCategoryIcon(log.type)}
+                        <span className="capitalize">{getActivityCategory(log.type)}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="max-w-md">{log.details}</TableCell>
+                    <TableCell className="hidden md:table-cell">{getSeverityBadge(log.severity)}</TableCell>
+                    <TableCell className="hidden md:table-cell text-sm text-gray-500">
+                      {format(new Date(log.timestamp), "PPp")}
+                    </TableCell>
+                    <TableCell>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => setExpandedLog(expandedLog === log.id ? null : log.id)}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                  
+                  {expandedLog === log.id && (
+                    <TableRow>
+                      <TableCell colSpan={7} className="bg-muted/20 p-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div>
+                            <h4 className="text-sm font-medium mb-1">Event Details</h4>
+                            <div className="text-sm">
+                              <p><strong>Type:</strong> {log.type}</p>
+                              <p><strong>Category:</strong> {getActivityCategory(log.type)}</p>
+                              <p><strong>Severity:</strong> {log.severity}</p>
+                            </div>
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-medium mb-1">Device Information</h4>
+                            <div className="text-sm">
+                              <p><strong>Device ID:</strong> {log.deviceId}</p>
+                              <p><strong>Timestamp:</strong> {format(new Date(log.timestamp), "PPpp")}</p>
+                            </div>
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-medium mb-1">Additional Information</h4>
+                            <div className="text-sm">
+                              <p><strong>Description:</strong> {log.details}</p>
+                              <p><strong>Action Required:</strong> {log.severity === 'critical' 
+                                ? 'Yes - Immediate attention needed' 
+                                : log.severity === 'warning' 
+                                  ? 'Yes - Review when possible' 
+                                  : 'No action required'}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={7} className="text-center py-8 text-gray-500">
                   No activities found matching your filters
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
+      </div>
+
+      {totalPages > 1 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious 
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                className={page === 1 ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+            
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              // Show pages around the current page
+              let pageNumber;
+              if (totalPages <= 5) {
+                pageNumber = i + 1;
+              } else if (page <= 3) {
+                pageNumber = i + 1;
+              } else if (page >= totalPages - 2) {
+                pageNumber = totalPages - 4 + i;
+              } else {
+                pageNumber = page - 2 + i;
+              }
+              
+              return (
+                <PaginationItem key={pageNumber}>
+                  <PaginationLink
+                    isActive={pageNumber === page}
+                    onClick={() => setPage(pageNumber)}
+                  >
+                    {pageNumber}
+                  </PaginationLink>
+                </PaginationItem>
+              );
+            })}
+            
+            <PaginationItem>
+              <PaginationNext 
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                className={page === totalPages ? "pointer-events-none opacity-50" : ""}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
+      
+      <div className="text-sm text-gray-500">
+        Showing {paginatedLogs.length > 0 ? (page - 1) * itemsPerPage + 1 : 0} to {Math.min(page * itemsPerPage, filteredLogs.length)} of {filteredLogs.length} activities
       </div>
     </div>
   );
