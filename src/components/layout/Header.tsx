@@ -9,10 +9,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { BellIcon, Search } from "lucide-react";
+import { BellIcon, LogOut, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export function Header() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <header className="h-16 px-6 border-b flex items-center justify-between bg-white">
       <div className="relative w-64">
@@ -36,10 +46,10 @@ export function Header() {
             <div className="flex items-center gap-2 cursor-pointer">
               <Avatar className="h-8 w-8">
                 <AvatarFallback className="bg-enterprise-100 text-enterprise-800">
-                  AD
+                  {user?.username ? user.username.substring(0, 2).toUpperCase() : "AD"}
                 </AvatarFallback>
               </Avatar>
-              <div className="text-sm font-medium">Admin</div>
+              <div className="text-sm font-medium">{user?.username || "Admin"}</div>
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -48,7 +58,10 @@ export function Header() {
             <DropdownMenuItem>Profile</DropdownMenuItem>
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Logout</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
