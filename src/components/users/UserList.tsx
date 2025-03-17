@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
@@ -25,9 +24,11 @@ import {
   Search, 
   UserPlus, 
   Filter, 
-  ArrowUpDown
+  ArrowUpDown,
+  RefreshCw
 } from "lucide-react";
 import { devices } from "@/lib/mock-data";
+import { UserSync } from "./UserSync";
 
 // Generate mock users based on device users
 const generateMockUsers = () => {
@@ -51,6 +52,7 @@ export function UserList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState("lastActive");
   const [sortDirection, setSortDirection] = useState("desc");
+  const [showSyncOptions, setShowSyncOptions] = useState(false);
   
   const users = generateMockUsers();
   
@@ -89,6 +91,10 @@ export function UserList() {
       description: "This feature is not implemented yet.",
     });
   };
+
+  const toggleSyncOptions = () => {
+    setShowSyncOptions(!showSyncOptions);
+  };
   
   return (
     <div className="space-y-6">
@@ -103,11 +109,22 @@ export function UserList() {
             Manage user accounts and permissions
           </p>
         </div>
-        <Button onClick={handleAddUser}>
-          <UserPlus className="h-4 w-4 mr-2" />
-          Add User
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={toggleSyncOptions} variant="outline">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Sync
+          </Button>
+          <Button onClick={handleAddUser}>
+            <UserPlus className="h-4 w-4 mr-2" />
+            Add User
+          </Button>
+        </div>
       </div>
+      
+      {/* Sync Options */}
+      {showSyncOptions && (
+        <UserSync />
+      )}
       
       {/* Search and filters */}
       <Card>

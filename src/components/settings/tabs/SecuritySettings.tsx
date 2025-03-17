@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,17 +11,20 @@ import {
   Save, 
   ShieldAlert, 
   ShieldCheck, 
-  Timer 
+  Timer,
+  Users 
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { UserSync } from "@/components/users/UserSync";
 
 export function SecuritySettings() {
   const { toast } = useToast();
   const [mfa, setMfa] = useState(false);
   const [sessionTimeout, setSessionTimeout] = useState(30);
   const [passwordExpiry, setPasswordExpiry] = useState("90days");
+  const [syncTab, setSyncTab] = useState(false);
   
   const handleSaveSecurity = () => {
     toast({
@@ -217,6 +219,35 @@ export function SecuritySettings() {
               max={10} 
             />
           </div>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            <span>User Synchronization</span>
+          </CardTitle>
+          <CardDescription>
+            Configure user synchronization with external systems.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between mb-4">
+            <div className="space-y-0.5">
+              <Label htmlFor="show-sync-settings">Show Synchronization Settings</Label>
+              <p className="text-sm text-muted-foreground">
+                Configure external system integration for user management.
+              </p>
+            </div>
+            <Switch 
+              id="show-sync-settings" 
+              checked={syncTab} 
+              onCheckedChange={setSyncTab} 
+            />
+          </div>
+          
+          {syncTab && <UserSync />}
         </CardContent>
       </Card>
       
