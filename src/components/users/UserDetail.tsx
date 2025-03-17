@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -28,7 +27,7 @@ export function UserDetail({ userId }: UserDetailProps) {
   const fullName = `${username.charAt(0).toUpperCase() + username.slice(1).replace('_', ' ')}`;
   
   // Get all devices associated with this user
-  const userDevices = devices.filter(device => device.userId === userId);
+  const userDevices = devices.filter(device => device.user === userId);
   
   // Get all activity logs for this user's devices
   const userActivities = activityLogs.filter(log => 

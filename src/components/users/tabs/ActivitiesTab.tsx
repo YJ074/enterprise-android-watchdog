@@ -9,7 +9,7 @@ type ActivitiesTabProps = {
 
 export function ActivitiesTab({ userId }: ActivitiesTabProps) {
   // Get all devices associated with this user
-  const userDevices = devices.filter(device => device.userId === userId);
+  const userDevices = devices.filter(device => device.user === userId);
   
   // Get all activity logs for this user's devices
   const userActivities = activityLogs.filter(log => 
@@ -34,7 +34,6 @@ export function ActivitiesTab({ userId }: ActivitiesTabProps) {
       <ActivityList
         activeTab="all"
         dateRange={dateRange}
-        initialData={userActivities}
       />
     </div>
   );
