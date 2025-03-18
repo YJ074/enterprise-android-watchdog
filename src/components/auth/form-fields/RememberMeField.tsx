@@ -22,14 +22,15 @@ export const RememberMeField = ({ control }: RememberMeFieldProps) => {
             <Checkbox
               checked={field.value}
               onCheckedChange={field.onChange}
+              id="remember-me"
             />
           </FormControl>
           <div className="space-y-1 leading-none">
-            <FormLabel className="cursor-pointer">
+            <FormLabel className="cursor-pointer" htmlFor="remember-me">
               Remember me
             </FormLabel>
             <FormDescription className="text-xs">
-              Save your username for next time
+              Stay logged in on this device
             </FormDescription>
           </div>
         </FormItem>

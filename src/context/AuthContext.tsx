@@ -8,7 +8,7 @@ type User = {
 type AuthContextType = {
   isAuthenticated: boolean;
   user: User | null;
-  login: (user: User) => void;
+  login: (user: User, rememberMe: boolean) => void;
   logout: () => void;
   isLoading: boolean;
 };
@@ -38,11 +38,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setTimeout(checkAuth, 300);
   }, []);
 
-  const login = (userData: User) => {
+  const login = (userData: User, rememberMe: boolean) => {
     setIsAuthenticated(true);
     setUser(userData);
-    localStorage.setItem("isAuthenticated", "true");
-    localStorage.setItem("user", JSON.stringify(userData));
+    
+    // If remember me is checked, store auth data in localStorage
+    if (rememberMe) {
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("user", JSON.stringify(userData));
+    } else {
+      // Use sessionStorage instead for non-persistent sessions
+      sessionStorage.setItem("isAuthenticated", "true");
+      sessionStorage.setItem("user", JSON.stringify(userData));
+      // Remove any previous remembered data
+      localStorage.removeItem("isAuthenticated");
+      localStorage.removeItem("user");
+    }
   };
 
   const logout = () => {
@@ -50,6 +61,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("user");
+    sessionStorage.removeItem("isAuthenticated");
+    sessionStorage.removeItem("user");
     // Keep the remembered username if it exists
   };
 

@@ -42,7 +42,7 @@ export const LoginForm = ({ onLogin }: LoginFormProps) => {
     setLoginError("");
     
     try {
-      // Handle "Remember me" functionality
+      // Handle "Remember me" functionality for username
       if (data.rememberMe) {
         localStorage.setItem("rememberedUsername", data.username);
       } else {

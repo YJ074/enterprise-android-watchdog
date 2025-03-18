@@ -2,7 +2,7 @@
 import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, LogIn, KeyRound, UserPlus } from "lucide-react";
+import { AlertCircle, LogIn, KeyRound, UserPlus, ShieldCheck } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
@@ -24,7 +24,7 @@ const LoginPage = () => {
     try {
       if (username === "admin" && password === "admin123") {
         // Login using the auth context
-        login({ username, role: "admin" });
+        login({ username, role: "admin" }, rememberMe);
         
         toast({
           title: "Login successful",
