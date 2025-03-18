@@ -1,4 +1,3 @@
-
 import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -20,12 +19,11 @@ const LoginPage = () => {
 
   const handleLogin = async (username: string, password: string, rememberMe: boolean) => {
     setLoginError(null);
-    // This is a demo login - in a real app, you would validate against a backend
     try {
-      if (username === "admin" && password === "admin123") {
-        // Login using the auth context
-        login({ username, role: "admin" }, rememberMe);
-        
+      // Use the email as username for Supabase login
+      const success = await login(username, password, rememberMe);
+      
+      if (success) {
         toast({
           title: "Login successful",
           description: "Welcome to the admin dashboard",

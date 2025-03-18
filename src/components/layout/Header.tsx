@@ -46,10 +46,10 @@ export function Header() {
             <div className="flex items-center gap-2 cursor-pointer">
               <Avatar className="h-8 w-8">
                 <AvatarFallback className="bg-enterprise-100 text-enterprise-800">
-                  {user?.username ? user.username.substring(0, 2).toUpperCase() : "AD"}
+                  {user?.email ? user.email.substring(0, 2).toUpperCase() : "AD"}
                 </AvatarFallback>
               </Avatar>
-              <div className="text-sm font-medium">{user?.username || "Admin"}</div>
+              <div className="text-sm font-medium">{user?.email ? user.email.split('@')[0] : "Admin"}</div>
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
