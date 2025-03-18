@@ -7,9 +7,10 @@ import { ActivityLogRows } from "./table/ActivityLogRows";
 
 interface ActivityTableProps {
   logs: ActivityLog[];
+  isFiltered?: boolean;
 }
 
-export function ActivityTable({ logs }: ActivityTableProps) {
+export function ActivityTable({ logs, isFiltered = false }: ActivityTableProps) {
   const [expandedLog, setExpandedLog] = useState<string | null>(null);
   
   const handleToggleExpand = (id: string) => {
@@ -25,7 +26,7 @@ export function ActivityTable({ logs }: ActivityTableProps) {
           onToggleExpand={handleToggleExpand}
         />
       ) : (
-        <EmptyState />
+        <EmptyState filterActive={isFiltered} />
       )}
     </TableWrapper>
   );

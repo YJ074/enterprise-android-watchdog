@@ -3,12 +3,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { UserSearchFilter } from "./UserSearchFilter";
 import { UserTable } from "./UserTable";
 
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  lastActive: string;
+  created: string;
+}
+
 interface UserCardProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   sortField: string;
   handleSort: (field: string) => void;
-  filteredUsers: any[];
+  filteredUsers: User[];
 }
 
 export function UserCard({ 

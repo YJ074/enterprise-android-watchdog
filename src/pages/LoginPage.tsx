@@ -7,35 +7,45 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/AuthContext";
 import { LoginForm } from "@/components/auth/LoginForm";
+import { useState } from "react";
 
 const LoginPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { login } = useAuth();
+  const [loginError, setLoginError] = useState<string | null>(null);
   
   const redirectPath = location.state?.from || "/";
 
   const handleLogin = async (username: string, password: string, rememberMe: boolean) => {
+    setLoginError(null);
     // This is a demo login - in a real app, you would validate against a backend
-    if (username === "admin" && password === "admin123") {
-      // Login using the auth context
-      login({ username, role: "admin" });
-      
-      toast({
-        title: "Login successful",
-        description: "Welcome to the admin dashboard",
-      });
-      
-      // Redirect to the page they were trying to access, or dashboard
-      navigate(redirectPath);
-      return true;
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Login failed",
-        description: "Please check your credentials and try again",
-      });
+    try {
+      if (username === "admin" && password === "admin123") {
+        // Login using the auth context
+        login({ username, role: "admin" });
+        
+        toast({
+          title: "Login successful",
+          description: "Welcome to the admin dashboard",
+        });
+        
+        // Redirect to the page they were trying to access, or dashboard
+        navigate(redirectPath);
+        return true;
+      } else {
+        setLoginError("Invalid username or password. Try using admin/admin123.");
+        toast({
+          variant: "destructive",
+          title: "Login failed",
+          description: "Please check your credentials and try again",
+        });
+        return false;
+      }
+    } catch (error) {
+      setLoginError("An unexpected error occurred. Please try again.");
+      console.error("Login error:", error);
       return false;
     }
   };
@@ -59,6 +69,17 @@ const LoginPage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {loginError && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertCircle className="h-4 w-4 mr-2" />
+              <AlertDescription>{loginError}</AlertDescription>
+            </Alert>
+          )}
+          <div className="mb-4 p-3 bg-blue-50 rounded-md text-sm text-blue-700 border border-blue-100">
+            <p className="font-medium">Demo Credentials:</p>
+            <p>Username: <code className="bg-blue-100 px-1 rounded">admin</code></p>
+            <p>Password: <code className="bg-blue-100 px-1 rounded">admin123</code></p>
+          </div>
           <LoginForm onLogin={handleLogin} />
         </CardContent>
         <CardFooter className="flex-col space-y-4 border-t p-4">
