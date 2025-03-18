@@ -5,12 +5,13 @@ import { UserTable } from "./UserTable";
 
 export interface User {
   id: string;
-  name: string;
+  username: string;
+  fullName: string;
   email: string;
   role: string;
   status: string;
-  lastActive: string;
-  created: string;
+  lastActive: Date;
+  devices: number;
 }
 
 interface UserCardProps {

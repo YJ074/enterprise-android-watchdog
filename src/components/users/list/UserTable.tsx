@@ -2,9 +2,10 @@
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { UserTableHeader } from "./UserTableHeader";
 import { UserTableRow } from "./UserTableRow";
+import { User } from "./UserCard";
 
 interface UserTableProps {
-  filteredUsers: any[];
+  filteredUsers: User[];
   sortField: string;
   handleSort: (field: string) => void;
 }

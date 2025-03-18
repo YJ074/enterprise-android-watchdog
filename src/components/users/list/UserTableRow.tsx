@@ -2,17 +2,7 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-
-interface User {
-  id: string;
-  username: string;
-  fullName: string;
-  email: string;
-  role: string;
-  status: string;
-  lastActive: Date;
-  devices: number;
-}
+import { User } from "./UserCard";
 
 interface UserTableRowProps {
   user: User;
