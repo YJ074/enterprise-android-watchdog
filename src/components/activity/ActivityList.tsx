@@ -1,9 +1,11 @@
 
 import { activityLogs } from "@/lib/mock-data";
 import { useActivityFilters } from "./useActivityFilters";
+import { useActivityListState } from "./useActivityListState";
 import { SearchAndFilterBar } from "./filters/SearchAndFilterBar";
 import { ActivityTable } from "./ActivityTable";
 import { ActivityPagination } from "./ActivityPagination";
+import { useMemo } from "react";
 
 interface ActivityListProps {
   activeTab?: string;
@@ -15,11 +17,9 @@ interface ActivityListProps {
 
 export function ActivityList({ activeTab = "all", dateRange }: ActivityListProps) {
   const {
-    paginatedLogs,
     filteredLogs,
     page,
     setPage,
-    totalPages,
     searchTerm,
     setSearchTerm,
     typeFilter,
@@ -33,6 +33,12 @@ export function ActivityList({ activeTab = "all", dateRange }: ActivityListProps
     uniqueApps,
     itemsPerPage
   } = useActivityFilters(activityLogs, activeTab, dateRange);
+
+  // Use memoized state to prevent unnecessary re-renders
+  const { paginatedLogs, totalPages } = useMemo(
+    () => useActivityListState({ filteredLogs, page, itemsPerPage }),
+    [filteredLogs, page, itemsPerPage]
+  );
 
   return (
     <div className="space-y-4">
