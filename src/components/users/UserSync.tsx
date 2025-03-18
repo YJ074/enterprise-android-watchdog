@@ -3,12 +3,14 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { Users } from "lucide-react";
+import { AlertCircle, CheckCircle, Shield, Users } from "lucide-react";
 import { SyncSources } from "./sync/SyncSources";
 import { ApiSourceConfig } from "./sync/ApiSourceConfig";
 import { CsvSourceConfig } from "./sync/CsvSourceConfig";
 import { AutoSyncConfig } from "./sync/AutoSyncConfig";
 import { SyncActions } from "./sync/SyncActions";
+import { ScimSourceConfig } from "./sync/ScimSourceConfig";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export function UserSync() {
   const { toast } = useToast();
@@ -18,20 +20,24 @@ export function UserSync() {
   const [syncInterval, setSyncInterval] = useState("daily");
   const [lastSync, setLastSync] = useState<Date | null>(null);
   const [webhookUrl, setWebhookUrl] = useState("");
+  const [syncSuccess, setSyncSuccess] = useState<boolean | null>(null);
 
   const handleSyncNow = () => {
     setSyncing(true);
+    setSyncSuccess(null);
     
     // Simulate API call to sync users
     setTimeout(() => {
       setSyncing(false);
       setLastSync(new Date());
+      setSyncSuccess(true);
       
       toast({
         title: "User Synchronization Complete",
         description: `Successfully synchronized users from ${syncSource.toUpperCase()}.`,
+        variant: "success",
       });
-    }, 1000);
+    }, 2000);
   };
 
   const handleSaveSettings = () => {
@@ -53,6 +59,28 @@ export function UserSync() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        {syncSuccess === true && (
+          <Alert variant="success" className="mb-4">
+            <CheckCircle className="h-4 w-4" />
+            <AlertTitle>Sync Successful</AlertTitle>
+            <AlertDescription>
+              User data was successfully synchronized with {syncSource.toUpperCase()}.
+              {lastSync && ` Last sync: ${lastSync.toLocaleString()}`}
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        {syncSuccess === false && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Sync Failed</AlertTitle>
+            <AlertDescription>
+              There was an error synchronizing with {syncSource.toUpperCase()}.
+              Please check your connection settings and try again.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <div className="space-y-4">
           <SyncSources 
             syncSource={syncSource} 
@@ -68,6 +96,22 @@ export function UserSync() {
 
           {syncSource === "csv" && (
             <CsvSourceConfig />
+          )}
+          
+          {syncSource === "scim" && (
+            <ScimSourceConfig />
+          )}
+
+          {/* Show a compliance notice for enterprise identity providers */}
+          {(syncSource === "azure" || syncSource === "okta" || syncSource === "onelogin" || syncSource === "jumpcloud") && (
+            <Alert className="bg-blue-50 border-blue-200 text-blue-800">
+              <Shield className="h-4 w-4 text-blue-800" />
+              <AlertTitle>Enterprise Compliance</AlertTitle>
+              <AlertDescription>
+                Syncing with {syncSource === "azure" ? "Azure AD" : syncSource} enables enterprise compliance features.
+                User attributes from your identity provider will be automatically mapped to our system.
+              </AlertDescription>
+            </Alert>
           )}
 
           <AutoSyncConfig

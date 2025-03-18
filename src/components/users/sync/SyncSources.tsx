@@ -20,8 +20,12 @@ export function SyncSources({ syncSource, setSyncSource }: SyncSourcesProps) {
           <SelectItem value="azure">Azure Active Directory</SelectItem>
           <SelectItem value="google">Google Workspace</SelectItem>
           <SelectItem value="okta">Okta</SelectItem>
+          <SelectItem value="onelogin">OneLogin</SelectItem>
+          <SelectItem value="jumpcloud">JumpCloud</SelectItem>
+          <SelectItem value="salesforce">Salesforce</SelectItem>
           <SelectItem value="csv">CSV Upload</SelectItem>
           <SelectItem value="api">External API</SelectItem>
+          <SelectItem value="scim">SCIM 2.0</SelectItem>
         </SelectContent>
       </Select>
     </div>
