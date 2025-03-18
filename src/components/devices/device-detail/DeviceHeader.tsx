@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Lock, RefreshCw, ShieldCheck } from "lucide-react";
+import { DeviceBadge } from "@/components/dashboard/DeviceBadge";
 
 type DeviceHeaderProps = {
   device: {
@@ -33,6 +34,7 @@ export function DeviceHeader({ device, onLockDevice, onRefreshData }: DeviceHead
         </Button>
         <h1 className="text-2xl font-bold">{device.name}</h1>
         <div className={`w-3 h-3 rounded-full ${getStatusColor(device.status)}`} />
+        <DeviceBadge status={device.status as 'online' | 'offline' | 'warning' | 'compromised'} />
       </div>
       <div className="flex gap-2">
         <Button variant="outline" onClick={onRefreshData}>

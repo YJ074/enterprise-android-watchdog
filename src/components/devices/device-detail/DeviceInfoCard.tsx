@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { DeviceBadge } from "@/components/dashboard/DeviceBadge";
 import { Smartphone, BarChart, Clock, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
 
@@ -14,16 +14,6 @@ type DeviceInfoCardProps = {
 };
 
 export function DeviceInfoCard({ device }: DeviceInfoCardProps) {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'online': return 'bg-green-500';
-      case 'offline': return 'bg-gray-400';
-      case 'warning': return 'bg-yellow-500';
-      case 'compromised': return 'bg-red-500';
-      default: return 'bg-gray-400';
-    }
-  };
-
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -57,9 +47,7 @@ export function DeviceInfoCard({ device }: DeviceInfoCardProps) {
               <AlertTriangle className="h-5 w-5 text-muted-foreground" />
               <span className="font-medium">Status</span>
             </div>
-            <Badge className={getStatusColor(device.status)}>
-              {device.status.charAt(0).toUpperCase() + device.status.slice(1)}
-            </Badge>
+            <DeviceBadge status={device.status as 'online' | 'offline' | 'warning' | 'compromised'} />
           </div>
         </div>
       </CardContent>
