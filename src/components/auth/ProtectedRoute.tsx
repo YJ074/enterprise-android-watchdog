@@ -16,19 +16,26 @@ export const ProtectedRoute = ({ children, requiredDataAccess }: ProtectedRouteP
   const { toast } = useToast();
 
   useEffect(() => {
-    // Data access check for admins when a specific data access is required
-    if (isAuthenticated && !isLoading && requiredDataAccess && user?.role === "admin") {
+    // Data access check for users when a specific data access is required
+    if (isAuthenticated && !isLoading && requiredDataAccess && user?.role) {
       try {
-        const adminAccess = JSON.parse(localStorage.getItem("adminDataAccess") || "[]");
-        if (!adminAccess.includes(requiredDataAccess)) {
+        // Get the user's data access permissions from localStorage
+        const userAccessItems = localStorage.getItem("adminDataAccess") || "[]";
+        const userAccess = JSON.parse(userAccessItems);
+        
+        // Check if the user has the required access
+        if (!userAccess.includes(requiredDataAccess)) {
           toast({
             title: "Access Restricted",
-            description: `You don't have access to ${requiredDataAccess.replace('-', ' ')} in your admin settings.`,
+            description: `You don't have access to ${requiredDataAccess.replace('-', ' ')}. Please contact your administrator.`,
             variant: "destructive",
           });
+          
+          // Optionally redirect to an access denied page or dashboard
+          // navigate('/access-denied');
         }
       } catch (error) {
-        console.error("Error checking admin data access:", error);
+        console.error("Error checking data access permissions:", error);
       }
     }
   }, [isAuthenticated, isLoading, requiredDataAccess, user, toast]);
