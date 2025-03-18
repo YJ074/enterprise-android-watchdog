@@ -54,7 +54,7 @@ export function MobileDataAccess({ platform }: MobileDataAccessProps) {
       </p>
 
       {complianceMode !== "standard" && (
-        <Alert variant="warning" className="bg-amber-50 text-amber-800 border-amber-200">
+        <Alert className="bg-amber-50 text-amber-800 border-amber-200">
           <AlertTitle className="flex items-center gap-1">
             <Shield className="h-4 w-4" />
             {complianceMode.toUpperCase()} Compliance Mode Active
