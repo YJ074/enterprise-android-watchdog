@@ -19,6 +19,7 @@ import MobileSetupPage from "./pages/MobileSetupPage";
 import LoginPage from "./pages/LoginPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import CreateAdminPage from "./pages/CreateAdminPage";
+import SupabaseSetupPage from "./pages/SupabaseSetupPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
               <Route path="/login" element={<LoginPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
               <Route path="/create-admin" element={<CreateAdminPage />} />
+              <Route path="/supabase-setup" element={<SupabaseSetupPage />} />
               
               <Route path="/" element={
                 <ProtectedRoute>

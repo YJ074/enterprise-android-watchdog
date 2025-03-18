@@ -24,59 +24,50 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+import { type NewDevice } from "@/hooks/useDevices";
 
 const formSchema = z.object({
   name: z.string().min(3, { message: "Device name must be at least 3 characters." }),
   model: z.string().min(2, { message: "Model is required." }),
-  osVersion: z.string().min(1, { message: "OS version is required." }),
-  user: z.string().min(2, { message: "User name is required." }),
+  os_version: z.string().min(1, { message: "OS version is required." }),
+  user_id: z.string().min(2, { message: "User name is required." }),
   department: z.string().min(2, { message: "Department is required." }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 interface AddDeviceDialogProps {
-  onDeviceAdded?: (device: FormValues) => void;
+  onDeviceAdded?: (device: NewDevice) => void;
   trigger?: React.ReactNode;
 }
 
 export function AddDeviceDialog({ onDeviceAdded, trigger }: AddDeviceDialogProps) {
   const [open, setOpen] = useState(false);
-  const { toast } = useToast();
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       model: "",
-      osVersion: "",
-      user: "",
+      os_version: "",
+      user_id: "",
       department: "",
     },
   });
 
   function onSubmit(data: FormValues) {
     // In a real application, you would save this to your backend
-    const newDevice = {
+    const newDevice: NewDevice = {
       ...data,
-      id: `dev-${Math.floor(Math.random() * 1000)}`, // Generate a random ID
-      status: "offline" as const,
-      lastSeen: new Date().toISOString(),
-      batteryLevel: 100,
-      storageUsed: 0,
-      totalStorage: 128,
-      applications: [],
+      status: "offline",
+      battery_level: 100,
+      storage_used: 0,
+      total_storage: 128,
     };
 
     if (onDeviceAdded) {
-      onDeviceAdded(data);
+      onDeviceAdded(newDevice);
     }
-
-    toast({
-      title: "Device Added",
-      description: `${data.name} has been added to your managed devices.`,
-    });
 
     // Reset form and close dialog
     form.reset();
@@ -134,7 +125,7 @@ export function AddDeviceDialog({ onDeviceAdded, trigger }: AddDeviceDialogProps
             />
             <FormField
               control={form.control}
-              name="osVersion"
+              name="os_version"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>OS Version</FormLabel>
@@ -147,7 +138,7 @@ export function AddDeviceDialog({ onDeviceAdded, trigger }: AddDeviceDialogProps
             />
             <FormField
               control={form.control}
-              name="user"
+              name="user_id"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Assigned User</FormLabel>

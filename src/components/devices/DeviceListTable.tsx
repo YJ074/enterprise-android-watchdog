@@ -1,12 +1,24 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { devices } from "@/lib/mock-data";
 import { Link } from "react-router-dom";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { DeviceBatteryIndicator } from "@/components/dashboard/DeviceBatteryIndicator";
 import { DeviceBadge } from "@/components/dashboard/DeviceBadge";
+import { type Device } from "@/hooks/useDevices";
 
-export function DeviceListTable() {
+interface DeviceListTableProps {
+  devices: Device[];
+}
+
+export function DeviceListTable({ devices }: DeviceListTableProps) {
+  if (devices.length === 0) {
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        No devices found. Add a device to get started.
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -30,21 +42,21 @@ export function DeviceListTable() {
                 <div className="text-xs text-muted-foreground">{device.model}</div>
               </TableCell>
               <TableCell>
-                <div>{device.user}</div>
+                <div>{device.user_id}</div>
                 <div className="text-xs text-muted-foreground">{device.department}</div>
               </TableCell>
               <TableCell>
                 <DeviceBadge status={device.status} />
               </TableCell>
-              <TableCell>{device.osVersion}</TableCell>
+              <TableCell>{device.os_version}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
-                  <DeviceBatteryIndicator level={device.batteryLevel} />
-                  <span>{device.batteryLevel}%</span>
+                  <DeviceBatteryIndicator level={device.battery_level} />
+                  <span>{device.battery_level}%</span>
                 </div>
               </TableCell>
               <TableCell>
-                {format(new Date(device.lastSeen), "MM/dd/yyyy h:mm a")}
+                {format(parseISO(device.last_seen), "MM/dd/yyyy h:mm a")}
               </TableCell>
             </TableRow>
           ))}
