@@ -7,9 +7,13 @@ import { SecuritySettings } from "./tabs/SecuritySettings";
 import { ApiSettings } from "./tabs/ApiSettings";
 import { EnterpriseSettings } from "./tabs/EnterpriseSettings";
 import { MonitoringSettings } from "./tabs/MonitoringSettings";
+import { DataAccessSettings } from "./tabs/DataAccessSettings";
+import { useAuth } from "@/context/AuthContext";
 
 export function Settings() {
   const [activeTab, setActiveTab] = useState("general");
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
   
   return (
     <div className="space-y-6">
@@ -28,6 +32,7 @@ export function Settings() {
           <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
           <TabsTrigger value="api">API & Integrations</TabsTrigger>
           <TabsTrigger value="enterprise">Enterprise</TabsTrigger>
+          {isAdmin && <TabsTrigger value="data-access">Data Access</TabsTrigger>}
         </TabsList>
         
         <TabsContent value="general" className="space-y-4">
@@ -53,6 +58,12 @@ export function Settings() {
         <TabsContent value="enterprise" className="space-y-4">
           <EnterpriseSettings />
         </TabsContent>
+
+        {isAdmin && (
+          <TabsContent value="data-access" className="space-y-4">
+            <DataAccessSettings />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

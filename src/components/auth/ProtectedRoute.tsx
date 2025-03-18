@@ -1,16 +1,37 @@
 
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 type ProtectedRouteProps = {
   children: ReactNode;
+  requiredDataAccess?: string;
 };
 
-export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { isAuthenticated, isLoading } = useAuth();
+export const ProtectedRoute = ({ children, requiredDataAccess }: ProtectedRouteProps) => {
+  const { isAuthenticated, isLoading, user } = useAuth();
   const location = useLocation();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Data access check for admins when a specific data access is required
+    if (isAuthenticated && !isLoading && requiredDataAccess && user?.role === "admin") {
+      try {
+        const adminAccess = JSON.parse(localStorage.getItem("adminDataAccess") || "[]");
+        if (!adminAccess.includes(requiredDataAccess)) {
+          toast({
+            title: "Access Restricted",
+            description: `You don't have access to ${requiredDataAccess.replace('-', ' ')} in your admin settings.`,
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error("Error checking admin data access:", error);
+      }
+    }
+  }, [isAuthenticated, isLoading, requiredDataAccess, user, toast]);
 
   // Show a loading spinner while checking authentication
   if (isLoading) {

@@ -42,32 +42,32 @@ const App = () => (
                 </ProtectedRoute>
               } />
               <Route path="/devices" element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredDataAccess="device-data">
                   <DevicesPage />
                 </ProtectedRoute>
               } />
               <Route path="/device/:id" element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredDataAccess="device-data">
                   <DeviceDetailPage />
                 </ProtectedRoute>
               } />
               <Route path="/alerts" element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredDataAccess="security-alerts">
                   <AlertsPage />
                 </ProtectedRoute>
               } />
               <Route path="/activity" element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredDataAccess="activity-logs">
                   <ActivityPage />
                 </ProtectedRoute>
               } />
               <Route path="/users" element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredDataAccess="user-data">
                   <UsersPage />
                 </ProtectedRoute>
               } />
               <Route path="/user/:id" element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredDataAccess="user-data">
                   <UserDetailPage />
                 </ProtectedRoute>
               } />
