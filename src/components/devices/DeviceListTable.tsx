@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import { DeviceBatteryIndicator } from "@/components/dashboard/DeviceBatteryIndicator";
 import { DeviceBadge } from "@/components/dashboard/DeviceBadge";
-import { type Device } from "@/hooks/useDevices";
+import { Device } from "@/lib/types/device.types";
 
 interface DeviceListTableProps {
   devices: Device[];
@@ -42,21 +42,21 @@ export function DeviceListTable({ devices }: DeviceListTableProps) {
                 <div className="text-xs text-muted-foreground">{device.model}</div>
               </TableCell>
               <TableCell>
-                <div>{device.user_id}</div>
+                <div>{device.user}</div>
                 <div className="text-xs text-muted-foreground">{device.department}</div>
               </TableCell>
               <TableCell>
                 <DeviceBadge status={device.status} />
               </TableCell>
-              <TableCell>{device.os_version}</TableCell>
+              <TableCell>{device.osVersion}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
-                  <DeviceBatteryIndicator level={device.battery_level} />
-                  <span>{device.battery_level}%</span>
+                  <DeviceBatteryIndicator level={device.batteryLevel} />
+                  <span>{device.batteryLevel}%</span>
                 </div>
               </TableCell>
               <TableCell>
-                {format(parseISO(device.last_seen), "MM/dd/yyyy h:mm a")}
+                {format(parseISO(device.lastSeen), "MM/dd/yyyy h:mm a")}
               </TableCell>
             </TableRow>
           ))}
