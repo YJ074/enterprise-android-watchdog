@@ -34,7 +34,6 @@ export function UserSync() {
       toast({
         title: "User Synchronization Complete",
         description: `Successfully synchronized users from ${syncSource.toUpperCase()}.`,
-        variant: "success",
       });
     }, 2000);
   };
@@ -59,7 +58,7 @@ export function UserSync() {
       </CardHeader>
       <CardContent className="space-y-6">
         {syncSuccess === true && (
-          <Alert variant="success" className="mb-4">
+          <Alert className="mb-4">
             <CheckCircle className="h-4 w-4" />
             <AlertTitle>Sync Successful</AlertTitle>
             <AlertDescription>

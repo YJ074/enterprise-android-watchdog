@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +19,6 @@ export function ScimSourceConfig() {
     toast({
       title: "New SCIM token generated",
       description: "The new token has been created. Copy it now - you won't be able to see it again.",
-      variant: "success",
     });
   };
 
@@ -35,7 +33,7 @@ export function ScimSourceConfig() {
 
   return (
     <div className="space-y-4">
-      <Alert variant="success" className="mb-4">
+      <Alert>
         <AlertDescription>
           SCIM 2.0 allows automated user provisioning and deprovisioning with supported identity providers.
         </AlertDescription>

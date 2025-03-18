@@ -65,7 +65,7 @@ export function Dashboard() {
         <RecentActivityList />
         <div>
           <h2 className="text-xl font-semibold mb-4">Device Overview</h2>
-          <DeviceListTable />
+          <DeviceListTable devices={devices} />
         </div>
       </div>
     </div>

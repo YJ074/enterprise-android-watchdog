@@ -56,20 +56,23 @@ export function AddDeviceDialog({ onDeviceAdded, trigger }: AddDeviceDialogProps
   });
 
   function onSubmit(data: FormValues) {
-    // In a real application, you would save this to your backend
     const newDevice: NewDevice = {
-      ...data,
-      status: "offline",
+      name: data.name,
+      model: data.model,
+      os_version: data.os_version,
+      user_id: data.user_id,
+      department: data.department,
+      status: 'offline',
       battery_level: 100,
       storage_used: 0,
       total_storage: 128,
+      last_seen: new Date().toISOString(),
     };
 
     if (onDeviceAdded) {
       onDeviceAdded(newDevice);
     }
 
-    // Reset form and close dialog
     form.reset();
     setOpen(false);
   }
