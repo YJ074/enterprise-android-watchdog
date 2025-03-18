@@ -36,6 +36,23 @@ export function MobileAppFeatures() {
     setQrGenerated(false); // Reset QR when platform changes
   };
 
+  const renderPlatformContent = (currentPlatform: PlatformType) => (
+    <div className="space-y-6">
+      <div className="grid md:grid-cols-2 gap-6">
+        <MobileAppConfiguration 
+          onGenerateQR={handleGenerateQR} 
+          platform={currentPlatform} 
+        />
+        <MobileAppInstallation 
+          qrGenerated={qrGenerated} 
+          onDownloadApp={handleDownloadApp} 
+          platform={currentPlatform}
+        />
+      </div>
+      <MobileDataAccess platform={currentPlatform} />
+    </div>
+  );
+
   return (
     <Card>
       <CardHeader>
@@ -61,33 +78,11 @@ export function MobileAppFeatures() {
           </TabsList>
           
           <TabsContent value="android" className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <MobileAppConfiguration 
-                onGenerateQR={handleGenerateQR} 
-                platform="android" 
-              />
-              <MobileAppInstallation 
-                qrGenerated={qrGenerated} 
-                onDownloadApp={handleDownloadApp} 
-                platform="android"
-              />
-            </div>
-            <MobileDataAccess platform="android" />
+            {renderPlatformContent("android")}
           </TabsContent>
           
           <TabsContent value="ios" className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              <MobileAppConfiguration 
-                onGenerateQR={handleGenerateQR} 
-                platform="ios" 
-              />
-              <MobileAppInstallation 
-                qrGenerated={qrGenerated} 
-                onDownloadApp={handleDownloadApp} 
-                platform="ios"
-              />
-            </div>
-            <MobileDataAccess platform="ios" />
+            {renderPlatformContent("ios")}
           </TabsContent>
         </Tabs>
         

@@ -1,6 +1,7 @@
 
 import { AlertTriangle } from "lucide-react";
 import { PlatformType } from "../MobileAppFeatures";
+import { PlatformSpecificWarning } from "./PlatformSpecificWarning";
 
 interface MobileAppWarningProps {
   platform: PlatformType;
@@ -14,27 +15,19 @@ export function MobileAppWarning({ platform }: MobileAppWarningProps) {
         <div>
           <h4 className="font-medium">Important Notice</h4>
           {platform === "android" ? (
-            <div className="text-sm mt-1 space-y-1">
-              <p>
-                The Android monitoring app requires special permissions to function properly.
-                Make sure to follow all installation instructions carefully.
-              </p>
+            <PlatformSpecificWarning title="The Android monitoring app requires special permissions to function properly. Make sure to follow all installation instructions carefully.">
               <p>
                 Some Android devices may require disabling battery optimization for the app.
                 This application should only be used in compliance with all applicable laws.
               </p>
-            </div>
+            </PlatformSpecificWarning>
           ) : (
-            <div className="text-sm mt-1 space-y-1">
-              <p>
-                iOS monitoring capabilities are more limited due to platform restrictions.
-                MDM enrollment or enterprise certificate is required for full functionality.
-              </p>
+            <PlatformSpecificWarning title="iOS monitoring capabilities are more limited due to platform restrictions. MDM enrollment or enterprise certificate is required for full functionality.">
               <p>
                 For complete user data access and monitoring capabilities, devices must be enrolled in your MDM solution.
                 This application should only be used in compliance with all applicable laws and Apple's guidelines.
               </p>
-            </div>
+            </PlatformSpecificWarning>
           )}
         </div>
       </div>
