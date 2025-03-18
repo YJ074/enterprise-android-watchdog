@@ -1,73 +1,139 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { supabase, isMockEnvironment } from "@/lib/supabase";
 
-type User = {
-  username: string;
+interface User {
+  id: string;
+  email: string;
   role: string;
-};
+}
 
-type AuthContextType = {
-  isAuthenticated: boolean;
+interface AuthContextType {
   user: User | null;
-  login: (user: User, rememberMe: boolean) => void;
-  logout: () => void;
+  isAuthenticated: boolean;
   isLoading: boolean;
-};
+  login: (email: string, password: string, rememberMe: boolean) => Promise<boolean>;
+  logout: () => Promise<void>;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Check localStorage for existing auth data on initial load
-    const checkAuth = () => {
-      const storedAuth = localStorage.getItem("isAuthenticated");
-      const storedUser = localStorage.getItem("user");
-      
-      if (storedAuth === "true" && storedUser) {
-        setIsAuthenticated(true);
-        setUser(JSON.parse(storedUser));
-      }
-      
+    // For development/testing without Supabase setup
+    if (isMockEnvironment) {
+      console.log("Using mock auth environment");
+      // Simulate authenticated user for development
+      setUser({ id: "mock-user-id", email: "dev@example.com", role: "admin" });
+      setIsAuthenticated(true);
       setIsLoading(false);
+      return;
+    }
+
+    // Normal Supabase auth flow
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log("Auth state changed:", event);
+        setIsLoading(true);
+        
+        if (session?.user) {
+          setUser({
+            id: session.user.id,
+            email: session.user.email,
+            role: session.user.app_metadata?.role || "user",
+          });
+          setIsAuthenticated(true);
+        } else {
+          setUser(null);
+          setIsAuthenticated(false);
+        }
+        
+        setIsLoading(false);
+      }
+    );
+
+    // Initial session check
+    const checkUser = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          setUser({
+            id: session.user.id,
+            email: session.user.email,
+            role: session.user.app_metadata?.role || "user",
+          });
+          setIsAuthenticated(true);
+        }
+      } catch (error) {
+        console.error("Error checking auth session:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
-    
-    // Simulate a slight delay to avoid flash of unauthenticated content
-    setTimeout(checkAuth, 300);
+
+    checkUser();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
-  const login = (userData: User, rememberMe: boolean) => {
-    setIsAuthenticated(true);
-    setUser(userData);
-    
-    // If remember me is checked, store auth data in localStorage
-    if (rememberMe) {
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("user", JSON.stringify(userData));
-    } else {
-      // Use sessionStorage instead for non-persistent sessions
-      sessionStorage.setItem("isAuthenticated", "true");
-      sessionStorage.setItem("user", JSON.stringify(userData));
-      // Remove any previous remembered data
-      localStorage.removeItem("isAuthenticated");
-      localStorage.removeItem("user");
+  const login = async (email: string, password: string, rememberMe: boolean): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (error) {
+        console.error("Login failed:", error.message);
+        return false;
+      }
+
+      if (data.user) {
+        setUser({
+          id: data.user.id,
+          email: data.user.email || '',
+          role: data.user.app_metadata?.role || "user",
+        });
+        setIsAuthenticated(true);
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error("Login error:", error);
+      return false;
     }
   };
 
-  const logout = () => {
-    setIsAuthenticated(false);
-    setUser(null);
-    localStorage.removeItem("isAuthenticated");
-    localStorage.removeItem("user");
-    sessionStorage.removeItem("isAuthenticated");
-    sessionStorage.removeItem("user");
-    // Keep the remembered username if it exists
+  const logout = async (): Promise<void> => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error("Logout failed:", error.message);
+      }
+      setUser(null);
+      setIsAuthenticated(false);
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, isLoading }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated,
+        isLoading,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
