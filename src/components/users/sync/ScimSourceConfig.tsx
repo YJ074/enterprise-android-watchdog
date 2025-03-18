@@ -35,7 +35,7 @@ export function ScimSourceConfig() {
 
   return (
     <div className="space-y-4">
-      <Alert variant="success" className="mb-4">
+      <Alert className="mb-4 border-green-200 bg-green-50 text-green-800">
         <AlertDescription>
           SCIM 2.0 allows automated user provisioning and deprovisioning with supported identity providers.
         </AlertDescription>
