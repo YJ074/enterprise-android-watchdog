@@ -31,8 +31,8 @@ export function MobileAppWarning({ platform }: MobileAppWarningProps) {
                 MDM enrollment or enterprise certificate is required for full functionality.
               </p>
               <p>
-                For complete monitoring capabilities, devices must be enrolled in your MDM solution.
-                This application should only be used in compliance with all applicable laws.
+                For complete user data access and monitoring capabilities, devices must be enrolled in your MDM solution.
+                This application should only be used in compliance with all applicable laws and Apple's guidelines.
               </p>
             </div>
           )}

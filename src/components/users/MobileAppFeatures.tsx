@@ -6,6 +6,7 @@ import { Smartphone, TabletSmartphone } from "lucide-react";
 import { MobileAppConfiguration } from "./mobile/MobileAppConfiguration";
 import { MobileAppInstallation } from "./mobile/MobileAppInstallation";
 import { MobileAppWarning } from "./mobile/MobileAppWarning";
+import { MobileDataAccess } from "./mobile/MobileDataAccess";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export type PlatformType = "android" | "ios";
@@ -71,6 +72,7 @@ export function MobileAppFeatures() {
                 platform="android"
               />
             </div>
+            <MobileDataAccess platform="android" />
           </TabsContent>
           
           <TabsContent value="ios" className="space-y-6">
@@ -85,6 +87,7 @@ export function MobileAppFeatures() {
                 platform="ios"
               />
             </div>
+            <MobileDataAccess platform="ios" />
           </TabsContent>
         </Tabs>
         
