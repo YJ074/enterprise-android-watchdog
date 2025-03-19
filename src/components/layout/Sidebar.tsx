@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { NavLink } from "react-router-dom";
@@ -14,6 +15,7 @@ import {
   X,
   Shield,
   Laptop,
+  FileDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -74,7 +76,7 @@ export function Sidebar() {
             </NavLink>
           </li>
           
-          {/* Computer MDM Link - NEW */}
+          {/* Computer MDM Link */}
           <li>
             <NavLink
               to="/computer-mdm"
@@ -88,7 +90,7 @@ export function Sidebar() {
             </NavLink>
           </li>
           
-          {/* MDM Profiles Link - NEW */}
+          {/* MDM Profiles Link */}
           <li>
             <NavLink
               to="/mdm-profiles"
@@ -141,6 +143,20 @@ export function Sidebar() {
             >
               <ShieldAlert className="h-4 w-4" />
               <span>Security</span>
+            </NavLink>
+          </li>
+
+          {/* Migrations Link - NEW */}
+          <li>
+            <NavLink
+              to="/migrations"
+              className={({isActive}) => cn(
+                "flex items-center gap-2 rounded-md px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground",
+                isActive && "bg-muted text-foreground"
+              )}
+            >
+              <FileDown className="h-4 w-4" />
+              <span>Migrations</span>
             </NavLink>
           </li>
 

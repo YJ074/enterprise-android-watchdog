@@ -10,6 +10,7 @@ import DeviceDetailPage from "./pages/DeviceDetailPage";
 import MdmProfilesPage from "./pages/MdmProfilesPage";
 import ComputerMdmPage from "./pages/ComputerMdmPage";
 import InvestigationPage from "./pages/InvestigationPage";
+import MigrationsPage from "./pages/MigrationsPage";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 import UsersPage from "./pages/UsersPage";
@@ -43,6 +44,7 @@ export function AppRoutes() {
       <Route path="/alerts" element={<ProtectedRoute><AlertsPage /></ProtectedRoute>} />
       <Route path="/settings/*" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
       <Route path="/investigation" element={<ProtectedRoute><InvestigationPage /></ProtectedRoute>} />
+      <Route path="/migrations" element={<ProtectedRoute><MigrationsPage /></ProtectedRoute>} />
       
       {/* 404 Route */}
       <Route path="*" element={<NotFound />} />
