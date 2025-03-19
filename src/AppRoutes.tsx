@@ -21,6 +21,7 @@ import SettingsPage from "./pages/SettingsPage";
 import AlertsPage from "./pages/AlertsPage";
 import CreateAdminPage from "./pages/CreateAdminPage";
 import MobileSetupPage from "./pages/MobileSetupPage";
+import SoftwarePage from "./pages/SoftwarePage";
 
 export function AppRoutes() {
   return (
@@ -45,6 +46,7 @@ export function AppRoutes() {
       <Route path="/settings/*" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
       <Route path="/investigation" element={<ProtectedRoute><InvestigationPage /></ProtectedRoute>} />
       <Route path="/migrations" element={<ProtectedRoute><MigrationsPage /></ProtectedRoute>} />
+      <Route path="/software" element={<ProtectedRoute><SoftwarePage /></ProtectedRoute>} />
       
       {/* 404 Route */}
       <Route path="*" element={<NotFound />} />

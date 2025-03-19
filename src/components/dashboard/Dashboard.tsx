@@ -1,3 +1,4 @@
+
 import { DashboardMetricCard } from "./DashboardMetricCard";
 import { DeviceStatusChart } from "./DeviceStatusChart";
 import { RecentActivityList } from "./RecentActivityList";
@@ -6,7 +7,7 @@ import { metrics, devices } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { DeviceListTable } from "../devices/DeviceListTable";
 import { Link } from "react-router-dom";
-import { AlertTriangle, BarChart3, Plus, Smartphone } from "lucide-react";
+import { AlertTriangle, BarChart3, Plus, Smartphone, PackageOpen } from "lucide-react";
 import { AddDeviceDialog } from "../devices/AddDeviceDialog";
 import { differenceInHours } from "date-fns";
 import { InactiveDevicesCard } from "./InactiveDevicesCard";
@@ -16,6 +17,7 @@ import { AnalyticsDashboard } from "../analytics/AnalyticsDashboard";
 import { DeviceMetricsChart } from "../analytics/DeviceMetricsChart";
 import { ActivityDistributionChart } from "../analytics/ActivityDistributionChart";
 import { DeviceStatusDistributionChart } from "../analytics/DeviceStatusDistributionChart";
+import { SoftwareDashboard } from "./SoftwareDashboard";
 
 export function Dashboard() {
   // Calculate inactive devices (devices not seen in the last 24 hours)
@@ -83,6 +85,10 @@ export function Dashboard() {
             <BarChart3 className="h-4 w-4 mr-2" />
             Device Metrics
           </TabsTrigger>
+          <TabsTrigger value="software">
+            <PackageOpen className="h-4 w-4 mr-2" />
+            Software
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -124,6 +130,10 @@ export function Dashboard() {
             <ActivityDistributionChart />
             <DeviceStatusDistributionChart />
           </div>
+        </TabsContent>
+
+        <TabsContent value="software" className="space-y-6">
+          <SoftwareDashboard />
         </TabsContent>
       </Tabs>
     </div>
