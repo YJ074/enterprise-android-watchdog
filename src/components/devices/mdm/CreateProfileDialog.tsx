@@ -56,12 +56,16 @@ export function CreateProfileDialog({ trigger, onProfileCreated }: CreateProfile
   });
   
   const onSubmit = (data: ProfileFormValues) => {
-    // In a real application, this would be an API call
+    // Ensure all required properties are explicitly set
     const newProfile: MdmProfile = {
       id: `profile-${Date.now()}`,
+      name: data.name, // Explicitly set required properties
+      description: data.description,
+      type: data.type,
+      settings: data.settings || {},
+      is_active: data.is_active,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      ...data
+      updated_at: new Date().toISOString()
     };
     
     onProfileCreated(newProfile);
