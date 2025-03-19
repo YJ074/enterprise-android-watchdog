@@ -2,10 +2,10 @@
 import React from "react";
 import { LogsTable } from "./LogsTable";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Log } from "@/lib/types/activity.types"; // Assuming this is the type for logs
+import { InvestigationLog } from "@/lib/api/investigation/investigationService"; // Updated import
 
 interface InvestigationResultsProps {
-  logs: Log[];
+  logs: InvestigationLog[];
   isLoading: boolean;
 }
 
