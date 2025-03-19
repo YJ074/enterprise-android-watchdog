@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { DeviceListTable } from "@/components/devices/DeviceListTable";
@@ -76,9 +75,29 @@ const DevicesPage = () => {
     document.body.removeChild(link);
   };
 
-  // Create a handler function to map between the NewDevice from AddDeviceDialog and what addDevice expects
+  // Create a handler function to map between the database NewDevice type and the application Device type
   const handleAddDevice = (newDevice: NewDevice) => {
-    addDevice(newDevice);
+    // Map from database schema fields to application model fields
+    const mappedDevice: Omit<Device, "id"> = {
+      name: newDevice.name,
+      model: newDevice.model,
+      osVersion: newDevice.os_version,
+      lastSeen: newDevice.last_seen || new Date().toISOString(),
+      status: newDevice.status || 'offline',
+      batteryLevel: newDevice.battery_level || 100,
+      storageUsed: newDevice.storage_used || 0,
+      totalStorage: newDevice.total_storage || 128,
+      user: newDevice.user_id,
+      department: newDevice.department,
+      applications: [],
+      location: newDevice.location_latitude && newDevice.location_longitude ? {
+        latitude: newDevice.location_latitude,
+        longitude: newDevice.location_longitude,
+        address: newDevice.location_address || ''
+      } : undefined
+    };
+    
+    addDevice(mappedDevice);
   };
 
   return (
