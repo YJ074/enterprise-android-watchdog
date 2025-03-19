@@ -1,4 +1,3 @@
-
 import { DashboardMetricCard } from "./DashboardMetricCard";
 import { DeviceStatusChart } from "./DeviceStatusChart";
 import { RecentActivityList } from "./RecentActivityList";
@@ -14,6 +13,9 @@ import { InactiveDevicesCard } from "./InactiveDevicesCard";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnalyticsDashboard } from "../analytics/AnalyticsDashboard";
+import { DeviceMetricsChart } from "../analytics/DeviceMetricsChart";
+import { ActivityDistributionChart } from "../analytics/ActivityDistributionChart";
+import { DeviceStatusDistributionChart } from "../analytics/DeviceStatusDistributionChart";
 
 export function Dashboard() {
   // Calculate inactive devices (devices not seen in the last 24 hours)
@@ -77,6 +79,10 @@ export function Dashboard() {
             <BarChart3 className="h-4 w-4 mr-2" />
             Advanced Analytics
           </TabsTrigger>
+          <TabsTrigger value="metrics">
+            <BarChart3 className="h-4 w-4 mr-2" />
+            Device Metrics
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -109,6 +115,15 @@ export function Dashboard() {
 
         <TabsContent value="analytics">
           <AnalyticsDashboard />
+        </TabsContent>
+
+        <TabsContent value="metrics" className="space-y-6">
+          <DeviceMetricsChart />
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <ActivityDistributionChart />
+            <DeviceStatusDistributionChart />
+          </div>
         </TabsContent>
       </Tabs>
     </div>
