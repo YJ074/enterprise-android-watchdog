@@ -11,13 +11,14 @@ import { AlertTriangle, BarChart3, Plus, Smartphone, PackageOpen } from "lucide-
 import { AddDeviceDialog } from "../devices/AddDeviceDialog";
 import { differenceInHours } from "date-fns";
 import { InactiveDevicesCard } from "./InactiveDevicesCard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnalyticsDashboard } from "../analytics/AnalyticsDashboard";
 import { DeviceMetricsChart } from "../analytics/DeviceMetricsChart";
 import { ActivityDistributionChart } from "../analytics/ActivityDistributionChart";
 import { DeviceStatusDistributionChart } from "../analytics/DeviceStatusDistributionChart";
 import { SoftwareDashboard } from "./SoftwareDashboard";
+import { useToast } from "@/components/ui/use-toast";
 
 export function Dashboard() {
   // Calculate inactive devices (devices not seen in the last 24 hours)
@@ -32,6 +33,15 @@ export function Dashboard() {
   
   // Set activeTab to "software" initially to make it visible first
   const [activeTab, setActiveTab] = useState("software");
+  const { toast } = useToast();
+  
+  // Use effect to show a toast notification about the software tab being active
+  useEffect(() => {
+    toast({
+      title: "Software Management Active",
+      description: "You're viewing the Software Management section. Use the tabs above to navigate to other sections.",
+    });
+  }, []);
   
   // Dummy handlers for the device list table
   const handleSelectDevice = () => {
@@ -91,7 +101,7 @@ export function Dashboard() {
             <BarChart3 className="h-4 w-4 mr-2" />
             Metrics
           </TabsTrigger>
-          <TabsTrigger value="software" className="bg-primary text-primary-foreground">
+          <TabsTrigger value="software" className="bg-primary text-primary-foreground ring-2 ring-primary/20 animate-pulse">
             <PackageOpen className="h-4 w-4 mr-2" />
             Software
           </TabsTrigger>
@@ -139,6 +149,16 @@ export function Dashboard() {
         </TabsContent>
 
         <TabsContent value="software" className="space-y-6">
+          <div className="p-4 bg-blue-50 border border-blue-200 rounded-md mb-4 shadow-sm">
+            <h3 className="text-lg font-medium text-blue-800 flex items-center">
+              <PackageOpen className="h-5 w-5 mr-2 text-blue-600" />
+              Software Management Dashboard
+            </h3>
+            <p className="text-blue-700 mt-1">
+              View and manage software installed across all devices in your organization.
+              Track installation counts, versions, and identify potential security risks.
+            </p>
+          </div>
           <SoftwareDashboard />
         </TabsContent>
       </Tabs>
