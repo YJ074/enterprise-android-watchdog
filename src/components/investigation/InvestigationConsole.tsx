@@ -5,6 +5,7 @@ import { LogsTable } from "./LogsTable";
 import { DeviceInfoBanner } from "./DeviceInfoBanner";
 import { InvestigationSearchForm } from "./form-fields/InvestigationSearchForm";
 import { useInvestigationConsole } from "./hooks/useInvestigationConsole";
+import { InvestigationResults } from "./InvestigationResults";
 
 export function InvestigationConsole() {
   const { id: deviceId } = useParams<{ id: string }>();
@@ -42,7 +43,7 @@ export function InvestigationConsole() {
       
       <DeviceInfoBanner device={device} />
       
-      <LogsTable logs={logs} isLoading={isSearching} />
+      <InvestigationResults logs={logs} isLoading={isSearching} />
     </div>
   );
 }
