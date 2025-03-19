@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangleIcon, ArrowUpRightIcon, TrendingUpIcon, ShieldIcon, PresentationChartLineIcon } from "lucide-react";
+import { AlertTriangle, ArrowUpRight, TrendingUp, Shield, LineChart } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Forecast insights data
@@ -8,25 +8,25 @@ const insights = [
   {
     title: "Device Growth Projection",
     description: "Based on current trends, device enrollment is expected to increase by 18% in the next 30 days.",
-    icon: <TrendingUpIcon className="h-5 w-5" />,
+    icon: <TrendingUp className="h-5 w-5" />,
     type: "positive",
   },
   {
     title: "Compliance Forecast",
     description: "Compliance rate is projected to improve to 96% within the next quarter based on current policy adoption rates.",
-    icon: <ShieldIcon className="h-5 w-5" />,
+    icon: <Shield className="h-5 w-5" />,
     type: "positive",
   },
   {
     title: "Security Risk Alert",
     description: "Risk models predict a potential 15% increase in security incidents if current vulnerable devices aren't updated.",
-    icon: <AlertTriangleIcon className="h-5 w-5" />,
+    icon: <AlertTriangle className="h-5 w-5" />,
     type: "warning",
   },
   {
     title: "Trend Analysis",
     description: "Statistical analysis shows strong correlation between monthly OS updates and reduced security incidents.",
-    icon: <PresentationChartLineIcon className="h-5 w-5" />,
+    icon: <LineChart className="h-5 w-5" />,
     type: "neutral",
   }
 ];
@@ -36,7 +36,7 @@ export function ForecastInsights() {
     <Card className="col-span-full">
       <CardHeader>
         <CardTitle className="flex items-center">
-          <ArrowUpRightIcon className="mr-2 h-5 w-5" />
+          <ArrowUpRight className="mr-2 h-5 w-5" />
           Forecast Insights
         </CardTitle>
         <CardDescription>
