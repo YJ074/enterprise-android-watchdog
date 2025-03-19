@@ -52,7 +52,10 @@ export function SoftwareDashboard() {
   }
 
   return (
-    <div id="software-dashboard" className="space-y-6 animate-in fade-in-50 duration-300 bg-white p-6 rounded-lg shadow-md border-2 border-blue-200">
+    <div 
+      id="software-dashboard" 
+      className="space-y-6 animate-in fade-in-50 duration-300 bg-white p-4 md:p-6 rounded-lg shadow-lg border-2 border-blue-200 max-w-full overflow-hidden"
+    >
       <SoftwareDashboardHeader 
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}

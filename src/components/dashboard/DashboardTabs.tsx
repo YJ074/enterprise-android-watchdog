@@ -42,7 +42,7 @@ export function DashboardTabs({
         title: "Software Dashboard Ready",
         description: "You're viewing the Software Management section.",
       });
-    }, 300);
+    }, 500);
     
     return () => clearTimeout(timer);
   }, [toast]);
@@ -57,7 +57,7 @@ export function DashboardTabs({
         title: "View Refreshed",
         description: "The Software Dashboard has been refreshed.",
       });
-    }, 100);
+    }, 200);
   };
   
   // Make sure the software content has a unique key to force re-rendering
@@ -70,22 +70,24 @@ export function DashboardTabs({
         console.log("Tab changed to:", value);
         setActiveTab(value);
       }}
-      className="space-y-4"
+      className="space-y-6"
       defaultValue="software"
     >
-      <TabsList className="grid grid-cols-4 md:grid-cols-4 gap-2">
-        <TabsTrigger value="overview">Overview</TabsTrigger>
-        <TabsTrigger value="analytics">
+      <TabsList className="grid grid-cols-4 md:grid-cols-4 gap-4 p-1 bg-blue-50 border-2 border-blue-100 rounded-lg">
+        <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:shadow-md">
+          Overview
+        </TabsTrigger>
+        <TabsTrigger value="analytics" className="data-[state=active]:bg-white data-[state=active]:shadow-md">
           <BarChart3 className="h-4 w-4 mr-2" />
           Analytics
         </TabsTrigger>
-        <TabsTrigger value="metrics">
+        <TabsTrigger value="metrics" className="data-[state=active]:bg-white data-[state=active]:shadow-md">
           <BarChart3 className="h-4 w-4 mr-2" />
           Metrics
         </TabsTrigger>
         <TabsTrigger 
           value="software" 
-          className="bg-primary text-primary-foreground ring-2 ring-primary/20 font-semibold"
+          className="bg-blue-600 text-white font-semibold data-[state=active]:bg-blue-700 data-[state=active]:shadow-md"
         >
           <PackageOpen className="h-4 w-4 mr-2" />
           Software
@@ -117,11 +119,11 @@ export function DashboardTabs({
 
       <TabsContent value="software" className="space-y-6">
         <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-md mb-4 shadow-sm">
-          <h3 className="text-lg font-medium text-blue-800 flex items-center">
-            <PackageOpen className="h-5 w-5 mr-2 text-blue-600" />
+          <h3 className="text-xl font-medium text-blue-800 flex items-center">
+            <PackageOpen className="h-6 w-6 mr-2 text-blue-600" />
             Software Management Dashboard
           </h3>
-          <p className="text-blue-700 mt-1">
+          <p className="text-blue-700 mt-2">
             View and manage software installed across all devices in your organization.
             Track installation counts, versions, and identify potential security risks.
           </p>
