@@ -13,6 +13,7 @@ import { BellIcon, LogOut, Search, Menu, ChevronLeft, ChevronRight } from "lucid
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -37,11 +38,16 @@ export function Header({ toggleSidebar, sidebarCollapsed }: HeaderProps) {
           onClick={toggleSidebar} 
           className="mr-2"
           aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          data-testid="sidebar-toggle"
         >
           {sidebarCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
         </Button>
         
-        <div className="relative w-64">
+        <div className={cn(
+          "relative", 
+          sidebarCollapsed ? "w-80" : "w-64",
+          "transition-all duration-300"
+        )}>
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input 
             placeholder="Search devices, users..." 

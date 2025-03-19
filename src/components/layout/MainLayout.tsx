@@ -4,6 +4,7 @@ import { Header } from "./Header";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -13,12 +14,23 @@ export function MainLayout({ children }: MainLayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  
+  // Default to collapsed sidebar on software pages
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(
+    location.pathname.includes('/software')
+  );
   
   // Toggle sidebar visibility
   const toggleSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
   };
+  
+  // Auto-collapse sidebar for software pages
+  useEffect(() => {
+    if (location.pathname.includes('/software') && !sidebarCollapsed) {
+      setSidebarCollapsed(true);
+    }
+  }, [location.pathname, sidebarCollapsed]);
   
   // Make sure we have content on the page
   useEffect(() => {
@@ -39,7 +51,11 @@ export function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="h-screen flex overflow-hidden">
       <Sidebar collapsed={sidebarCollapsed} />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className={cn(
+        "flex-1 flex flex-col overflow-hidden",
+        "transition-all duration-300",
+        sidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
+      )}>
         <Header toggleSidebar={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
         <main className="flex-1 overflow-auto p-6 bg-gray-50">
           {children}
