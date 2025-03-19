@@ -38,14 +38,11 @@ export function SoftwareDashboard() {
       description: "Software management interface is now visible.",
       variant: "default",
     });
-  }, [toast, allApplications, filteredApplications, topApps, isLoading]);
+  }, [toast]);
 
   const handleRefresh = () => {
+    console.log("Manual refresh triggered");
     window.location.reload();
-    toast({
-      title: "Dashboard Refreshed",
-      description: "Software data has been refreshed.",
-    });
   };
 
   // Show loading state
@@ -76,11 +73,14 @@ export function SoftwareDashboard() {
     );
   }
 
-  // Handle error state
+  // Show fallback for no data
   if (!allApplications || allApplications.length === 0) {
     return (
       <div className="p-8 text-center bg-white rounded-lg shadow-md border border-red-100">
-        <p className="text-muted-foreground mb-4">No software data available</p>
+        <p className="text-red-500 font-medium mb-4">No software data available</p>
+        <p className="text-muted-foreground mb-4">
+          There was an issue loading the software inventory data. Please try refreshing.
+        </p>
         <Button onClick={handleRefresh} variant="outline" size="sm" className="mx-auto">
           <RefreshCw className="mr-2 h-4 w-4" />
           Refresh Dashboard

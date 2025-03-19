@@ -9,7 +9,7 @@ interface SoftwareHeaderProps {
 }
 
 export function SoftwareHeader({ searchTerm, setSearchTerm }: SoftwareHeaderProps) {
-  console.log("Rendering SoftwareHeader with searchTerm:", searchTerm);
+  console.log("Rendering SoftwareHeader");
   
   return (
     <div className="w-full">
@@ -24,7 +24,6 @@ export function SoftwareHeader({ searchTerm, setSearchTerm }: SoftwareHeaderProp
           className="pl-8"
           value={searchTerm}
           onChange={(e) => {
-            console.log("Search changed:", e.target.value);
             setSearchTerm(e.target.value);
           }}
         />

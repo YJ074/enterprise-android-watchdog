@@ -15,7 +15,7 @@ const Index = () => {
   
   // Ensure content is visible and active
   useEffect(() => {
-    console.log("Index page loaded, ensuring software dashboard is visible");
+    console.log("Index page loaded at:", new Date().toISOString());
     
     // Show a welcome toast
     toast({
@@ -37,7 +37,7 @@ const Index = () => {
     };
     
     // Add a delay to ensure DOM is ready
-    setTimeout(activateTab, 500);
+    setTimeout(activateTab, 800);
   }, [toast, dashboardKey]);
 
   const refreshView = () => {

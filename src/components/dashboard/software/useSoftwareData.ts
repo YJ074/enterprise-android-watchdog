@@ -19,32 +19,52 @@ export function useSoftwareData() {
   
   // Initialize data
   useEffect(() => {
-    console.log("Software data hook initializing...");
+    console.log("Software data hook initializing with devices:", devices.length);
     
-    // Extract all applications from all devices
-    const allApps = devices.flatMap(device => 
-      device.applications.map(app => ({
-        ...app,
-        deviceName: device.name,
-        deviceModel: device.model,
-        deviceOS: device.osVersion
-      }))
-    );
+    if (!devices || devices.length === 0) {
+      console.error("No devices data available");
+      setIsLoading(false);
+      return;
+    }
     
-    // Set applications with slight delay to ensure rendering
-    const timer = setTimeout(() => {
-      console.log("Setting applications data:", allApps.length);
-      setApplications(allApps);
+    try {
+      // Extract all applications from all devices
+      const allApps = devices.flatMap(device => 
+        device.applications.map(app => ({
+          ...app,
+          deviceName: device.name,
+          deviceModel: device.model,
+          deviceOS: device.osVersion
+        }))
+      );
+      
+      console.log("Prepared applications data:", allApps.length);
+      
+      // Set applications with slight delay to ensure rendering
+      const timer = setTimeout(() => {
+        console.log("Setting applications data:", allApps.length);
+        setApplications(allApps);
+        setIsLoading(false);
+        setInitialized(true);
+        
+        toast({
+          title: "Software Data Loaded",
+          description: `Loaded ${allApps.length} applications across ${devices.length} devices.`,
+        });
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    } catch (error) {
+      console.error("Error processing software data:", error);
       setIsLoading(false);
       setInitialized(true);
       
       toast({
-        title: "Software Data Loaded",
-        description: `Loaded ${allApps.length} applications across ${devices.length} devices.`,
+        title: "Data Loading Error",
+        description: "There was a problem loading software data. Please refresh.",
+        variant: "destructive",
       });
-    }, 500);
-    
-    return () => clearTimeout(timer);
+    }
   }, [toast]); // Only run on mount
   
   // Get all applications
