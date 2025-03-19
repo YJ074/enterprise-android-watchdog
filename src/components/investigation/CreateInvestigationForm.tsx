@@ -49,8 +49,11 @@ export function CreateInvestigationForm() {
     setIsSubmitting(true);
     
     try {
+      // Fix: Ensure all required properties are provided and not optional
       await createInvestigation({
-        ...data,
+        title: data.title, // Now explicitly required
+        description: data.description, // Now explicitly required
+        deviceIds: data.deviceIds, // Now explicitly required
         startDate: format(dateRange.from, "yyyy-MM-dd"),
         endDate: dateRange.to ? format(dateRange.to, "yyyy-MM-dd") : undefined,
         status: "active",
