@@ -16,13 +16,15 @@ import {
 import { InfoBanner } from "../common/InfoBanner";
 import { MigrationStats } from './MigrationStats';
 import { Button } from "@/components/ui/button";
-import { FileDown, FileUp, History, RefreshCw } from "lucide-react";
+import { FileDown, FileUp, History, RefreshCw, Home } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { migrationService } from "@/lib/api/migration/migrationService";
+import { useNavigate } from 'react-router-dom';
 
 export const MigrationDashboard = () => {
   const [activeTab, setActiveTab] = useState('migrations');
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const handleExportAll = () => {
     toast({
@@ -52,14 +54,28 @@ export const MigrationDashboard = () => {
     });
   };
   
+  const handleGoToDevices = () => {
+    navigate('/devices');
+  };
+  
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight">Migrations</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold tracking-tight">Migrations</h1>
+          <Button variant="outline" size="sm" onClick={handleGoToDevices}>
+            <Home className="h-4 w-4 mr-2" />
+            Back to Devices
+          </Button>
+        </div>
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/devices">Devices</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>

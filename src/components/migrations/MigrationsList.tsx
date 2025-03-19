@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Table, 
@@ -20,7 +19,8 @@ import {
   RefreshCw, 
   Search,
   FilterX,
-  Filter
+  Filter,
+  Home
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Input } from '@/components/ui/input';
@@ -36,6 +36,7 @@ import { MigrationDetail } from './MigrationDetail';
 import { useToast } from '@/components/ui/use-toast';
 import { Migration } from '@/lib/api/migration/migrationService';
 import { useMigrations } from '@/hooks/useMigrations';
+import { useNavigate } from 'react-router-dom';
 
 // Sample migration data - in a real app this would come from an API/service
 const sampleMigrations = [
@@ -157,9 +158,14 @@ export const MigrationsList = () => {
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
   const [selectedMigration, setSelectedMigration] = useState<Migration | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const handleViewDetails = (migration: Migration) => {
     setSelectedMigration(migration);
+  };
+  
+  const handleGoToDevices = () => {
+    navigate('/devices');
   };
   
   const handleExecuteMigration = (id: string) => {
@@ -249,12 +255,19 @@ export const MigrationsList = () => {
             <CardTitle>Migration History</CardTitle>
             <CardDescription>View and manage all migration tasks</CardDescription>
           </div>
-          <Button variant="outline" size="sm" className="mt-2 sm:mt-0" onClick={handleRefresh}>
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
+          <div className="flex gap-2 mt-2 sm:mt-0">
+            <Button variant="outline" size="sm" onClick={handleGoToDevices}>
+              <Home className="h-4 w-4 mr-2" />
+              Devices
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleRefresh}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
+          </div>
         </div>
       </CardHeader>
+      
       <CardContent>
         <div className="flex flex-col sm:flex-row gap-4 mb-4">
           <div className="relative flex-1">

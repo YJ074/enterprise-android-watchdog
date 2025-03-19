@@ -1,14 +1,14 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { FileDown, Play, RefreshCw, ArrowLeft, AlertTriangle, CheckCircle } from 'lucide-react';
+import { FileDown, Play, RefreshCw, ArrowLeft, AlertTriangle, CheckCircle, Home } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
 import { Migration, MigrationLog } from '@/lib/api/migration/migrationService';
 import { format, formatDistanceToNow } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 interface MigrationDetailProps {
   migration: Migration;
@@ -29,14 +29,25 @@ export const MigrationDetail = ({
   const isInProgress = migration.status === 'in-progress';
   const isCompleted = migration.status === 'completed';
   const isFailed = migration.status === 'failed';
+  const navigate = useNavigate();
+  
+  const handleGoToDevices = () => {
+    navigate('/devices');
+  };
   
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <Button variant="outline" size="sm" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Migrations
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={onBack}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Migrations
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleGoToDevices}>
+            <Home className="h-4 w-4 mr-2" />
+            Devices Dashboard
+          </Button>
+        </div>
         <div className="flex gap-2">
           {isPending && (
             <Button size="sm" onClick={onExecute}>
