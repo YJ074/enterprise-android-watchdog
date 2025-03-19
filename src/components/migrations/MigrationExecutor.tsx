@@ -1,18 +1,34 @@
+
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, Play, FileUp, Database, Clock, Server, CloudOff, Cloud, Settings } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
-import { useToast } from '@/components/ui/use-toast';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { Migration } from '@/lib/api/migration/migrationService';
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from '@/components/ui/select';
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from '@/components/ui/table';
+import { Checkbox } from '@/components/ui/checkbox';
+import { MigrationStatusBadge } from './detail/MigrationStatusBadge';
+import { Badge } from '@/components/ui/badge';
+import { Play, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import { useToast } from '@/components/ui/use-toast';
+import {
+  Alert,
+  AlertDescription
+} from '@/components/ui/alert';
+import { Progress } from '@/components/ui/progress';
 
 interface MigrationExecutorProps {
   migrations: Migration[];
@@ -21,285 +37,298 @@ interface MigrationExecutorProps {
 
 export const MigrationExecutor: React.FC<MigrationExecutorProps> = ({ 
   migrations,
-  onExecuteMigration
+  onExecuteMigration 
 }) => {
-  const [selectedMigration, setSelectedMigration] = useState('');
-  const [migrationMode, setMigrationMode] = useState('standard');
-  const [migrationStatus, setMigrationStatus] = useState<'idle' | 'running' | 'completed' | 'error'>('idle');
-  const [progress, setProgress] = useState(0);
-  const [validationMode, setValidationMode] = useState('basic');
-  const [logLevel, setLogLevel] = useState('info');
-  const [backupBeforeMigration, setBackupBeforeMigration] = useState(true);
+  const [selectedMigration, setSelectedMigration] = useState<string>('');
+  const [options, setOptions] = useState({
+    dryRun: false,
+    backup: true,
+    priority: 'normal'
+  });
+  const [executing, setExecuting] = useState(false);
+  const [executionProgress, setExecutionProgress] = useState(0);
+  const [executionSuccess, setExecutionSuccess] = useState<boolean | null>(null);
   const { toast } = useToast();
-
+  
+  const pendingMigrations = migrations.filter(migration => migration.status === 'pending');
+  const selectedMigrationData = migrations.find(m => m.id === selectedMigration);
+  
+  const handleOptionChange = (option: string, value: any) => {
+    setOptions(prev => ({
+      ...prev,
+      [option]: value
+    }));
+  };
+  
   const handleExecute = async () => {
     if (!selectedMigration) {
       toast({
-        title: "Error",
-        description: "Please select a migration to execute",
+        title: "No Migration Selected",
+        description: "Please select a migration to execute.",
         variant: "destructive",
       });
       return;
     }
-
-    // Set status to running and reset progress
-    setMigrationStatus('running');
-    setProgress(0);
-
+    
+    setExecuting(true);
+    setExecutionProgress(0);
+    setExecutionSuccess(null);
+    
+    // Simulate progress updates
+    const progressInterval = setInterval(() => {
+      setExecutionProgress(prev => {
+        if (prev >= 95) {
+          clearInterval(progressInterval);
+          return prev;
+        }
+        return prev + Math.floor(Math.random() * 10) + 1;
+      });
+    }, 500);
+    
     try {
-      // Call the provided onExecuteMigration function
       const success = await onExecuteMigration(selectedMigration);
       
-      // Simulate progress updates
-      const interval = setInterval(() => {
-        setProgress((prev) => {
-          const newProgress = prev + 10;
-          if (newProgress >= 100) {
-            clearInterval(interval);
-            setMigrationStatus(success ? 'completed' : 'error');
-            
-            if (success) {
-              toast({
-                title: "Migration Completed",
-                description: "The migration has been successfully executed.",
-              });
-            }
-            
-            return 100;
-          }
-          return newProgress;
+      // Complete the progress
+      clearInterval(progressInterval);
+      setExecutionProgress(100);
+      setExecutionSuccess(success);
+      
+      if (success) {
+        toast({
+          title: "Migration Executed Successfully",
+          description: `The migration has been executed with${options.dryRun ? ' dry run enabled.' : 'out issues.'}`,
         });
-      }, 500);
+      } else {
+        toast({
+          title: "Migration Execution Failed",
+          description: "There was an error executing the migration.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
-      setMigrationStatus('error');
+      clearInterval(progressInterval);
+      setExecutionSuccess(false);
       toast({
-        title: "Error",
-        description: "Failed to execute migration",
+        title: "Execution Error",
+        description: "An unexpected error occurred during migration execution.",
         variant: "destructive",
       });
+    } finally {
+      setTimeout(() => {
+        setExecuting(false);
+      }, 1000);
     }
   };
-
-  const handleImport = () => {
-    toast({
-      title: "Import Migration",
-      description: "Migration file upload would be handled here.",
-    });
-  };
-
-  const SystemEnvironment = ({ name, type, status }: { name: string; type: string; status: 'online' | 'offline' }) => (
-    <div className="flex items-center justify-between p-2 border rounded-md">
-      <div className="flex items-center gap-2">
-        {type === 'cloud' ? 
-          <Cloud className="h-4 w-4 text-blue-500" /> : 
-          <Server className="h-4 w-4 text-gray-500" />
-        }
-        <span>{name}</span>
-      </div>
-      <Badge variant={status === 'online' ? 'success' : 'destructive'}>
-        {status === 'online' ? 'Online' : 'Offline'}
-      </Badge>
-    </div>
-  );
-
+  
   return (
     <Card>
       <CardHeader>
         <CardTitle>Execute Migration</CardTitle>
         <CardDescription>
-          Run a pending migration, import a new migration file, or manage environments.
+          Run pending migrations with custom execution parameters
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {migrationStatus === 'running' && (
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span>Migration in progress</span>
-              <span>{progress}%</span>
-            </div>
-            <Progress value={progress} className="h-2" />
+      <CardContent className="space-y-6">
+        {pendingMigrations.length === 0 && (
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              No pending migrations available for execution.
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium">Select Migration</label>
+            <Select 
+              value={selectedMigration} 
+              onValueChange={setSelectedMigration}
+              disabled={pendingMigrations.length === 0 || executing}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a migration to execute" />
+              </SelectTrigger>
+              <SelectContent>
+                {pendingMigrations.map((migration) => (
+                  <SelectItem key={migration.id} value={migration.id}>
+                    {migration.name} ({migration.type})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-        )}
-
-        {migrationStatus === 'completed' && (
-          <Alert variant="success">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Success</AlertTitle>
-            <AlertDescription>
-              Migration has been successfully completed.
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {migrationStatus === 'error' && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>
-              There was an error executing the migration. Please check the logs.
-            </AlertDescription>
-          </Alert>
-        )}
-
-        <Tabs defaultValue="standard" value={migrationMode} onValueChange={setMigrationMode}>
-          <TabsList className="grid grid-cols-3 mb-4">
-            <TabsTrigger value="standard">Standard</TabsTrigger>
-            <TabsTrigger value="advanced">Advanced</TabsTrigger>
-            <TabsTrigger value="environments">Environments</TabsTrigger>
-          </TabsList>
           
-          <TabsContent value="standard" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="md:col-span-2">
-                <Select value={selectedMigration} onValueChange={setSelectedMigration} disabled={migrationStatus === 'running'}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a migration" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {migrations.filter(m => m.status === 'pending').map(migration => (
-                      <SelectItem key={migration.id} value={migration.id}>{migration.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex gap-2">
-                <Button 
-                  className="flex-1"
-                  onClick={handleExecute} 
-                  disabled={!selectedMigration || migrationStatus === 'running'}
-                >
-                  <Play className="h-4 w-4 mr-2" />
-                  Execute
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="flex-1"
-                  onClick={handleImport} 
-                  disabled={migrationStatus === 'running'}
-                >
-                  <FileUp className="h-4 w-4 mr-2" />
-                  Import
-                </Button>
+          {selectedMigrationData && (
+            <div className="border rounded-md p-4">
+              <h3 className="font-medium mb-2">Migration Details</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Name</p>
+                  <p>{selectedMigrationData.name}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Type</p>
+                  <Badge variant="outline" className="capitalize">
+                    {selectedMigrationData.type}
+                  </Badge>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Status</p>
+                  <MigrationStatusBadge status={selectedMigrationData.status} />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Created</p>
+                  <p>{formatDistanceToNow(new Date(selectedMigrationData.createdAt), { addSuffix: true })}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Record Count</p>
+                  <p>{selectedMigrationData.recordCount}</p>
+                </div>
               </div>
             </div>
-            
-            <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="backup-before" 
-                checked={backupBeforeMigration}
-                onCheckedChange={(checked) => setBackupBeforeMigration(!!checked)}
-              />
-              <Label htmlFor="backup-before">Create backup before migration</Label>
-            </div>
-          </TabsContent>
+          )}
           
-          <TabsContent value="advanced" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Validation Mode</Label>
-                <Select value={validationMode} onValueChange={setValidationMode}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select validation mode" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="basic">Basic Validation</SelectItem>
-                    <SelectItem value="strict">Strict Validation</SelectItem>
-                    <SelectItem value="custom">Custom Rules</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label>Log Level</Label>
-                <Select value={logLevel} onValueChange={setLogLevel}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select log level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="info">Info</SelectItem>
-                    <SelectItem value="debug">Debug</SelectItem>
-                    <SelectItem value="verbose">Verbose</SelectItem>
-                    <SelectItem value="warning">Warning & Above</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Execution Priority</Label>
-              <div className="grid grid-cols-3 gap-2">
-                <Button variant="outline" size="sm" className="justify-start">
-                  <Database className="h-4 w-4 mr-2" />
-                  Database
-                </Button>
-                <Button variant="outline" size="sm" className="justify-start">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Configuration
-                </Button>
-                <Button variant="outline" size="sm" className="justify-start">
-                  <Server className="h-4 w-4 mr-2" />
-                  Services
-                </Button>
-              </div>
-            </div>
-            
-            <Separator />
-            
-            <div className="space-y-2">
-              <Label>Timeout (minutes)</Label>
-              <Input type="number" defaultValue="30" min="1" max="120" />
-            </div>
-            
-            <div className="space-y-2">
-              <Label>Retry Strategy</Label>
-              <Select defaultValue="exponential">
-                <SelectTrigger>
-                  <SelectValue placeholder="Select retry strategy" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">No Retry</SelectItem>
-                  <SelectItem value="linear">Linear Backoff</SelectItem>
-                  <SelectItem value="exponential">Exponential Backoff</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </TabsContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Execution Options</TableHead>
+                <TableHead>Value</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="dry-run" 
+                      checked={options.dryRun}
+                      onCheckedChange={(checked) => 
+                        handleOptionChange('dryRun', !!checked)
+                      }
+                      disabled={executing}
+                    />
+                    <label
+                      htmlFor="dry-run"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Dry Run
+                    </label>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm text-muted-foreground">
+                    {options.dryRun 
+                      ? "Enabled - Only simulate migration without making changes" 
+                      : "Disabled - Will execute real migration"
+                    }
+                  </span>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="backup" 
+                      checked={options.backup}
+                      onCheckedChange={(checked) => 
+                        handleOptionChange('backup', !!checked)
+                      }
+                      disabled={executing}
+                    />
+                    <label
+                      htmlFor="backup"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Create Backup
+                    </label>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <span className="text-sm text-muted-foreground">
+                    {options.backup 
+                      ? "Enabled - Create data backup before migration" 
+                      : "Disabled - No backup will be created"
+                    }
+                  </span>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>
+                  <label
+                    htmlFor="priority"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Priority Level
+                  </label>
+                </TableCell>
+                <TableCell>
+                  <Select 
+                    value={options.priority} 
+                    onValueChange={(value) => handleOptionChange('priority', value)}
+                    disabled={executing}
+                  >
+                    <SelectTrigger id="priority" className="w-[180px]">
+                      <SelectValue placeholder="Select priority" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="normal">Normal</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="critical">Critical</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
           
-          <TabsContent value="environments" className="space-y-4">
-            <div className="space-y-1">
-              <Label>Source Environment</Label>
-              <div className="space-y-2 mt-1">
-                <SystemEnvironment name="Production" type="cloud" status="online" />
-                <SystemEnvironment name="Staging" type="cloud" status="online" />
-                <SystemEnvironment name="Development" type="server" status="online" />
-                <SystemEnvironment name="Legacy System" type="server" status="offline" />
+          {executing && (
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-sm">Executing migration...</span>
+                <span className="text-sm">{executionProgress}%</span>
               </div>
+              <Progress value={executionProgress} />
             </div>
-            
-            <div className="space-y-1">
-              <Label>Destination Environment</Label>
-              <div className="space-y-2 mt-1">
-                <SystemEnvironment name="Production" type="cloud" status="online" />
-                <SystemEnvironment name="Staging" type="cloud" status="online" />
-                <SystemEnvironment name="Development" type="server" status="online" />
-                <SystemEnvironment name="Archive Storage" type="cloud" status="online" />
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <Checkbox id="connection-test" defaultChecked />
-              <Label htmlFor="connection-test">Test connections before migration</Label>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-      
-      <CardFooter className="flex justify-between bg-muted/10 p-4 border-t">
-        <div className="flex items-center">
-          <Clock className="h-4 w-4 mr-2 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">Estimated time: 5-10 minutes</span>
+          )}
+          
+          {executionSuccess === true && (
+            <Alert className="bg-green-50 border-green-200">
+              <CheckCircle2 className="h-4 w-4 text-green-600" />
+              <AlertDescription className="text-green-600">
+                Migration executed successfully!
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {executionSuccess === false && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Migration execution failed. Please check the logs for details.
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          <div className="flex justify-end">
+            <Button 
+              onClick={handleExecute} 
+              disabled={!selectedMigration || executing || pendingMigrations.length === 0}
+              className="gap-2"
+            >
+              {executing ? (
+                <>Running...</>
+              ) : (
+                <>
+                  <Play className="h-4 w-4" />
+                  Execute Migration
+                </>
+              )}
+            </Button>
+          </div>
         </div>
-        <Button variant="outline" size="sm">View Logs</Button>
-      </CardFooter>
+      </CardContent>
     </Card>
   );
 };
