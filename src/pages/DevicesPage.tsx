@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { Device } from "@/lib/types/device.types";
+import { NewDevice } from "@/hooks/devices/types";
 
 const DevicesPage = () => {
   const { devices, isLoading, error, handleRefresh, addDevice, updateDevice, deleteDevice } = useDevices();
@@ -75,6 +76,11 @@ const DevicesPage = () => {
     document.body.removeChild(link);
   };
 
+  // Create a handler function to map between the NewDevice from AddDeviceDialog and what addDevice expects
+  const handleAddDevice = (newDevice: NewDevice) => {
+    addDevice(newDevice);
+  };
+
   return (
     <MainLayout>
       <div className="space-y-6">
@@ -96,7 +102,7 @@ const DevicesPage = () => {
                   Add Device
                 </Button>
               }
-              onDeviceAdded={addDevice}
+              onDeviceAdded={handleAddDevice}
             />
           </div>
         </div>
