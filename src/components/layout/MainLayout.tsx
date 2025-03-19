@@ -1,7 +1,7 @@
 
 import { Sidebar } from "./Sidebar";
 import { Header } from "./Header";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 
@@ -13,6 +13,12 @@ export function MainLayout({ children }: MainLayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  
+  // Toggle sidebar visibility
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
   
   // Make sure we have content on the page
   useEffect(() => {
@@ -32,9 +38,9 @@ export function MainLayout({ children }: MainLayoutProps) {
 
   return (
     <div className="h-screen flex overflow-hidden">
-      <Sidebar />
+      <Sidebar collapsed={sidebarCollapsed} />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header />
+        <Header toggleSidebar={toggleSidebar} sidebarCollapsed={sidebarCollapsed} />
         <main className="flex-1 overflow-auto p-6 bg-gray-50">
           {children}
         </main>

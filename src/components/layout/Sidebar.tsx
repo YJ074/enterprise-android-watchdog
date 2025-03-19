@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { NavLink } from "react-router-dom";
@@ -19,13 +20,18 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function Sidebar() {
+interface SidebarProps {
+  collapsed?: boolean;
+}
+
+export function Sidebar({ collapsed = false }: SidebarProps) {
   const [expanded, setExpanded] = useState(false);
   
   return (
     <aside
       className={cn(
-        "fixed inset-y-0 left-0 z-20 flex h-full w-64 flex-col border-r bg-background transition-transform",
+        "fixed inset-y-0 left-0 z-20 flex h-full border-r bg-background transition-all duration-300",
+        collapsed ? "w-16" : "w-64",
         expanded ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}
     >
@@ -35,7 +41,7 @@ export function Sidebar() {
           className="flex items-center gap-2 font-bold text-lg text-enterprise-900"
         >
           <Layers className="h-6 w-6" />
-          <span>ACME MDM</span>
+          {!collapsed && <span>ACME MDM</span>}
         </Link>
         <Button
           variant="ghost"
@@ -58,7 +64,7 @@ export function Sidebar() {
               )}
             >
               <LayoutDashboard className="h-4 w-4" />
-              <span>Dashboard</span>
+              {!collapsed && <span>Dashboard</span>}
             </NavLink>
           </li>
           
@@ -72,7 +78,7 @@ export function Sidebar() {
               )}
             >
               <Smartphone className="h-4 w-4" />
-              <span>Devices</span>
+              {!collapsed && <span>Devices</span>}
             </NavLink>
           </li>
           
@@ -86,7 +92,7 @@ export function Sidebar() {
               )}
             >
               <Laptop className="h-4 w-4" />
-              <span>Computer MDM</span>
+              {!collapsed && <span>Computer MDM</span>}
             </NavLink>
           </li>
           
@@ -100,7 +106,7 @@ export function Sidebar() {
               )}
             >
               <Shield className="h-4 w-4" />
-              <span>MDM Profiles</span>
+              {!collapsed && <span>MDM Profiles</span>}
             </NavLink>
           </li>
 
@@ -114,7 +120,7 @@ export function Sidebar() {
               )}
             >
               <PackageOpen className="h-4 w-4" />
-              <span>Software</span>
+              {!collapsed && <span>Software</span>}
             </NavLink>
           </li>
 
@@ -128,7 +134,7 @@ export function Sidebar() {
               )}
             >
               <Users className="h-4 w-4" />
-              <span>Users</span>
+              {!collapsed && <span>Users</span>}
             </NavLink>
           </li>
 
@@ -142,7 +148,7 @@ export function Sidebar() {
               )}
             >
               <Activity className="h-4 w-4" />
-              <span>Activity</span>
+              {!collapsed && <span>Activity</span>}
             </NavLink>
           </li>
 
@@ -156,7 +162,7 @@ export function Sidebar() {
               )}
             >
               <ShieldAlert className="h-4 w-4" />
-              <span>Security</span>
+              {!collapsed && <span>Security</span>}
             </NavLink>
           </li>
 
@@ -170,7 +176,7 @@ export function Sidebar() {
               )}
             >
               <FileDown className="h-4 w-4" />
-              <span>Migrations</span>
+              {!collapsed && <span>Migrations</span>}
             </NavLink>
           </li>
 
@@ -186,7 +192,7 @@ export function Sidebar() {
               }
             >
               <Bell className="h-4 w-4" />
-              <span>Alerts</span>
+              {!collapsed && <span>Alerts</span>}
             </NavLink>
           </li>
 
@@ -200,16 +206,18 @@ export function Sidebar() {
               )}
             >
               <Settings className="h-4 w-4" />
-              <span>Settings</span>
+              {!collapsed && <span>Settings</span>}
             </NavLink>
           </li>
         </ul>
       </nav>
       
       <div className="border-t p-4">
-        <p className="text-muted-foreground text-xs">
-          ACME Corp. &copy; {new Date().getFullYear()}
-        </p>
+        {!collapsed && (
+          <p className="text-muted-foreground text-xs">
+            ACME Corp. &copy; {new Date().getFullYear()}
+          </p>
+        )}
       </div>
     </aside>
   );

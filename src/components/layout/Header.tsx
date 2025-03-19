@@ -9,12 +9,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { BellIcon, LogOut, Search } from "lucide-react";
+import { BellIcon, LogOut, Search, Menu, ChevronLeft, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-export function Header() {
+interface HeaderProps {
+  toggleSidebar: () => void;
+  sidebarCollapsed: boolean;
+}
+
+export function Header({ toggleSidebar, sidebarCollapsed }: HeaderProps) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -25,12 +30,24 @@ export function Header() {
 
   return (
     <header className="h-16 px-6 border-b flex items-center justify-between bg-white">
-      <div className="relative w-64">
-        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input 
-          placeholder="Search devices, users..." 
-          className="pl-8 w-full bg-muted/30 border-muted"
-        />
+      <div className="flex items-center gap-4">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={toggleSidebar} 
+          className="mr-2"
+          aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {sidebarCollapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
+        </Button>
+        
+        <div className="relative w-64">
+          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input 
+            placeholder="Search devices, users..." 
+            className="pl-8 w-full bg-muted/30 border-muted"
+          />
+        </div>
       </div>
       
       <div className="flex items-center gap-4">
