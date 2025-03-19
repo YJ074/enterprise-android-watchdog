@@ -1,5 +1,5 @@
 
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChartContainer } from "@/components/ui/chart";
 import { BarChart3, LineChart, PieChart } from "lucide-react";
@@ -87,5 +87,3 @@ export function ChartPreviewCard({ onSave }: ChartPreviewCardProps) {
     </Card>
   );
 }
-
-export const CardDescription = Card.Description;
