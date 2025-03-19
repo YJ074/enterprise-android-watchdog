@@ -9,6 +9,7 @@ interface SidebarNavItemProps {
   label: string;
   collapsed?: boolean;
   highlight?: boolean;
+  'data-testid'?: string;
 }
 
 export function SidebarNavItem({ 
@@ -16,12 +17,14 @@ export function SidebarNavItem({
   icon: Icon, 
   label, 
   collapsed = false,
-  highlight = false 
+  highlight = false,
+  'data-testid': testId
 }: SidebarNavItemProps) {
   return (
     <li>
       <NavLink
         to={to}
+        data-testid={testId}
         className={({isActive}) => cn(
           "flex items-center gap-2 rounded-md px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors",
           highlight && isActive 

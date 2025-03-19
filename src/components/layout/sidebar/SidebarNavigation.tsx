@@ -13,21 +13,26 @@ import {
   Settings
 } from "lucide-react";
 import { SidebarNavItem } from "./SidebarNavItem";
+import { useLocation } from "react-router-dom";
 
 interface SidebarNavigationProps {
   collapsed?: boolean;
 }
 
 export function SidebarNavigation({ collapsed = false }: SidebarNavigationProps) {
+  const location = useLocation();
+  const currentPath = location.pathname;
+  
   return (
     <nav className="flex-1 overflow-auto py-4">
-      <ul className="grid grid-flow-row gap-1 px-2 text-sm">
+      <ul className="grid grid-flow-row gap-1 px-2 text-sm" data-testid="sidebar-navigation">
         {/* Dashboard Link */}
         <SidebarNavItem 
           to="/" 
           icon={LayoutDashboard} 
           label="Dashboard" 
           collapsed={collapsed}
+          highlight={currentPath === "/"}
         />
         
         {/* Devices Link */}
@@ -36,6 +41,7 @@ export function SidebarNavigation({ collapsed = false }: SidebarNavigationProps)
           icon={Smartphone} 
           label="Devices" 
           collapsed={collapsed}
+          highlight={currentPath === "/devices"}
         />
         
         {/* Computer MDM Link */}
@@ -44,6 +50,7 @@ export function SidebarNavigation({ collapsed = false }: SidebarNavigationProps)
           icon={Laptop} 
           label="Computer MDM" 
           collapsed={collapsed}
+          highlight={currentPath === "/computer-mdm"}
         />
         
         {/* MDM Profiles Link */}
@@ -52,6 +59,7 @@ export function SidebarNavigation({ collapsed = false }: SidebarNavigationProps)
           icon={Shield} 
           label="MDM Profiles" 
           collapsed={collapsed}
+          highlight={currentPath === "/mdm-profiles"}
         />
 
         {/* Software Link - Highlighted */}
@@ -60,7 +68,8 @@ export function SidebarNavigation({ collapsed = false }: SidebarNavigationProps)
           icon={PackageOpen} 
           label="Software" 
           collapsed={collapsed}
-          highlight={true}
+          highlight={currentPath === "/software"}
+          data-testid="software-tab"
         />
 
         {/* Users Link */}
@@ -69,6 +78,7 @@ export function SidebarNavigation({ collapsed = false }: SidebarNavigationProps)
           icon={Users} 
           label="Users" 
           collapsed={collapsed}
+          highlight={currentPath === "/users"}
         />
 
         {/* Activity Link */}
@@ -77,6 +87,7 @@ export function SidebarNavigation({ collapsed = false }: SidebarNavigationProps)
           icon={Activity} 
           label="Activity" 
           collapsed={collapsed}
+          highlight={currentPath === "/activity"}
         />
 
         {/* Security Link */}
@@ -85,6 +96,7 @@ export function SidebarNavigation({ collapsed = false }: SidebarNavigationProps)
           icon={ShieldAlert} 
           label="Security" 
           collapsed={collapsed}
+          highlight={currentPath === "/security"}
         />
 
         {/* Migrations Link */}
@@ -93,6 +105,7 @@ export function SidebarNavigation({ collapsed = false }: SidebarNavigationProps)
           icon={FileDown} 
           label="Migrations" 
           collapsed={collapsed}
+          highlight={currentPath === "/migrations"}
         />
 
         {/* Alerts Link */}
@@ -101,6 +114,7 @@ export function SidebarNavigation({ collapsed = false }: SidebarNavigationProps)
           icon={Bell} 
           label="Alerts" 
           collapsed={collapsed}
+          highlight={currentPath === "/alerts"}
         />
 
         {/* Settings Link */}
@@ -109,6 +123,7 @@ export function SidebarNavigation({ collapsed = false }: SidebarNavigationProps)
           icon={Settings} 
           label="Settings" 
           collapsed={collapsed}
+          highlight={currentPath === "/settings"}
         />
       </ul>
     </nav>
