@@ -3,6 +3,7 @@ import React from 'react';
 import { InvestigationLog } from '@/lib/api/investigation/investigationService';
 import { LogsTable } from './LogsTable';
 import { DeviceInfoBanner } from './DeviceInfoBanner';
+import { useDevice } from '@/hooks/useDevices';
 
 interface InvestigationResultsProps {
   logs: InvestigationLog[];
@@ -15,13 +16,16 @@ export const InvestigationResults: React.FC<InvestigationResultsProps> = ({
   isLoading,
   deviceId,
 }) => {
+  // Fetch device data using the deviceId
+  const { device } = useDevice(deviceId);
+
   if (isLoading) {
     return <div className="py-8 text-center">Loading investigation results...</div>;
   }
 
   return (
     <div className="space-y-4">
-      {deviceId && <DeviceInfoBanner deviceId={deviceId} />}
+      {device && <DeviceInfoBanner device={device} />}
       
       {logs.length === 0 ? (
         <div className="py-8 text-center text-muted-foreground">
@@ -33,4 +37,3 @@ export const InvestigationResults: React.FC<InvestigationResultsProps> = ({
     </div>
   );
 };
-
