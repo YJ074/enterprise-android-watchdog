@@ -1,5 +1,6 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import { DeviceBatteryIndicator } from "@/components/dashboard/DeviceBatteryIndicator";
@@ -8,9 +9,17 @@ import { Device } from "@/lib/types/device.types";
 
 interface DeviceListTableProps {
   devices: Device[];
+  selectedDevices: Device[];
+  onSelectDevice: (device: Device, isSelected: boolean) => void;
+  onSelectAll: (isSelected: boolean) => void;
 }
 
-export function DeviceListTable({ devices }: DeviceListTableProps) {
+export function DeviceListTable({ 
+  devices, 
+  selectedDevices, 
+  onSelectDevice, 
+  onSelectAll 
+}: DeviceListTableProps) {
   if (devices.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
@@ -19,11 +28,22 @@ export function DeviceListTable({ devices }: DeviceListTableProps) {
     );
   }
 
+  const allSelected = devices.length > 0 && selectedDevices.length === devices.length;
+  const someSelected = selectedDevices.length > 0 && selectedDevices.length < devices.length;
+
   return (
     <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-12">
+              <Checkbox 
+                checked={allSelected} 
+                indeterminate={someSelected}
+                onCheckedChange={onSelectAll}
+                aria-label="Select all devices"
+              />
+            </TableHead>
             <TableHead>Device</TableHead>
             <TableHead>User</TableHead>
             <TableHead>Status</TableHead>
@@ -33,33 +53,44 @@ export function DeviceListTable({ devices }: DeviceListTableProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {devices.map((device) => (
-            <TableRow key={device.id}>
-              <TableCell className="font-medium">
-                <Link to={`/device/${device.id}`} className="text-enterprise-600 hover:underline">
-                  {device.name}
-                </Link>
-                <div className="text-xs text-muted-foreground">{device.model}</div>
-              </TableCell>
-              <TableCell>
-                <div>{device.user}</div>
-                <div className="text-xs text-muted-foreground">{device.department}</div>
-              </TableCell>
-              <TableCell>
-                <DeviceBadge status={device.status} />
-              </TableCell>
-              <TableCell>{device.osVersion}</TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <DeviceBatteryIndicator level={device.batteryLevel} />
-                  <span>{device.batteryLevel}%</span>
-                </div>
-              </TableCell>
-              <TableCell>
-                {format(parseISO(device.lastSeen), "MM/dd/yyyy h:mm a")}
-              </TableCell>
-            </TableRow>
-          ))}
+          {devices.map((device) => {
+            const isSelected = selectedDevices.some(d => d.id === device.id);
+            
+            return (
+              <TableRow key={device.id} className={isSelected ? "bg-muted/30" : undefined}>
+                <TableCell>
+                  <Checkbox 
+                    checked={isSelected}
+                    onCheckedChange={(checked) => onSelectDevice(device, !!checked)}
+                    aria-label={`Select ${device.name}`}
+                  />
+                </TableCell>
+                <TableCell className="font-medium">
+                  <Link to={`/device/${device.id}`} className="text-enterprise-600 hover:underline">
+                    {device.name}
+                  </Link>
+                  <div className="text-xs text-muted-foreground">{device.model}</div>
+                </TableCell>
+                <TableCell>
+                  <div>{device.user}</div>
+                  <div className="text-xs text-muted-foreground">{device.department}</div>
+                </TableCell>
+                <TableCell>
+                  <DeviceBadge status={device.status} />
+                </TableCell>
+                <TableCell>{device.osVersion}</TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <DeviceBatteryIndicator level={device.batteryLevel} />
+                    <span>{device.batteryLevel}%</span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  {format(parseISO(device.lastSeen), "MM/dd/yyyy h:mm a")}
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>

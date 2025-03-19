@@ -1,6 +1,8 @@
 
+import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { DeviceListTable } from "@/components/devices/DeviceListTable";
+import { BulkOperationsBar } from "@/components/devices/BulkOperationsBar";
 import { AddDeviceDialog } from "@/components/devices/AddDeviceDialog";
 import { Button } from "@/components/ui/button";
 import { Plus, RefreshCw, Download } from "lucide-react";
@@ -8,23 +10,57 @@ import { useDevices } from "@/hooks/useDevices";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { Device } from "@/lib/types/device.types";
 
 const DevicesPage = () => {
-  const { devices, isLoading, error, handleRefresh, addDevice } = useDevices();
+  const { devices, isLoading, error, handleRefresh, addDevice, updateDevice, deleteDevice } = useDevices();
+  const [selectedDevices, setSelectedDevices] = useState<Device[]>([]);
   
-  const handleExport = () => {
+  const handleSelectDevice = (device: Device, isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedDevices([...selectedDevices, device]);
+    } else {
+      setSelectedDevices(selectedDevices.filter(d => d.id !== device.id));
+    }
+  };
+  
+  const handleSelectAll = (isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedDevices([...devices]);
+    } else {
+      setSelectedDevices([]);
+    }
+  };
+  
+  const handleClearSelection = () => {
+    setSelectedDevices([]);
+  };
+  
+  const handleBulkUpdateDevices = (deviceIds: string[], updates: Partial<Device>) => {
+    deviceIds.forEach(id => {
+      updateDevice({ id, ...updates });
+    });
+  };
+  
+  const handleBulkDeleteDevices = (deviceIds: string[]) => {
+    deviceIds.forEach(id => {
+      deleteDevice(id);
+    });
+  };
+  
+  const handleExport = (devicesToExport: Device[] = devices) => {
     // Create a CSV of device data
     const headers = ["ID", "Name", "Model", "OS Version", "User", "Department", "Status", "Last Seen", "Battery"];
-    const csvData = devices.map(device => [
+    const csvData = devicesToExport.map(device => [
       device.id,
       device.name,
       device.model,
-      device.os_version,
-      device.user_id,
+      device.osVersion,
+      device.user,
       device.department,
       device.status,
-      device.last_seen,
-      `${device.battery_level}%`
+      device.lastSeen,
+      `${device.batteryLevel}%`
     ]);
     
     // Create and download CSV file
@@ -45,9 +81,9 @@ const DevicesPage = () => {
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Managed Devices</h1>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handleExport} disabled={isLoading || devices.length === 0}>
+            <Button variant="outline" onClick={() => handleExport()} disabled={isLoading || devices.length === 0}>
               <Download className="h-4 w-4 mr-2" />
-              Export
+              Export All
             </Button>
             <Button variant="outline" onClick={handleRefresh} disabled={isLoading}>
               <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
@@ -73,6 +109,15 @@ const DevicesPage = () => {
             </AlertDescription>
           </Alert>
         )}
+        
+        {/* Bulk Operations Bar */}
+        <BulkOperationsBar 
+          selectedDevices={selectedDevices}
+          clearSelection={handleClearSelection}
+          onUpdateDevices={handleBulkUpdateDevices}
+          onDeleteDevices={handleBulkDeleteDevices}
+          onExportDevices={handleExport}
+        />
 
         <div className="rounded-md bg-white p-6 shadow-sm">
           {isLoading ? (
@@ -84,7 +129,12 @@ const DevicesPage = () => {
               <Skeleton className="h-10 w-full" />
             </div>
           ) : (
-            <DeviceListTable devices={devices} />
+            <DeviceListTable 
+              devices={devices} 
+              selectedDevices={selectedDevices}
+              onSelectDevice={handleSelectDevice}
+              onSelectAll={handleSelectAll}
+            />
           )}
         </div>
       </div>
