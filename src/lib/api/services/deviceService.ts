@@ -1,4 +1,3 @@
-
 import { apiClient } from '../apiClient';
 import { Device } from '../../types/device.types';
 import { isMockEnvironment } from '../../supabase';
@@ -100,5 +99,47 @@ export const deviceService = {
     return apiClient.get<Device[]>('/devices', { 
       params: { status } 
     });
+  },
+  
+  /**
+   * Get only PC and laptop devices
+   */
+  async getPCAndLaptopDevices() {
+    if (isMockEnvironment) {
+      // Use mock data in development
+      const pcAndLaptopDevices = devices.filter(d => 
+        d.model.toLowerCase().includes('laptop') || 
+        d.model.toLowerCase().includes('desktop') ||
+        d.model.toLowerCase().includes('pc')
+      );
+      
+      return {
+        data: pcAndLaptopDevices,
+        error: null,
+        status: 200
+      };
+    }
+    
+    return apiClient.get<Device[]>('/devices/computers', { 
+      params: { types: 'laptop,desktop' } 
+    });
+  },
+  
+  /**
+   * Get device metrics by type (PC, laptop, mobile, etc.)
+   */
+  async getDeviceMetricsByType() {
+    if (isMockEnvironment) {
+      // Return mock metrics data
+      const { deviceTypeMetrics } = await import('../../mock/metrics.data');
+      
+      return {
+        data: deviceTypeMetrics,
+        error: null,
+        status: 200
+      };
+    }
+    
+    return apiClient.get('/metrics/device-types');
   }
 };

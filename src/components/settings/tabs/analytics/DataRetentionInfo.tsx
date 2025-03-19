@@ -11,7 +11,10 @@ export function DataRetentionInfo({ period }: DataRetentionInfoProps) {
         Currently set to: {period}
       </p>
       <p className="text-xs text-muted-foreground">
-        This applies to all device types: smartphones, tablets, laptops, desktop PCs, and IoT devices.
+        This applies to all device types: desktops, laptops, smartphones, tablets, and IoT devices.
+      </p>
+      <p className="text-xs text-muted-foreground mt-1">
+        <strong>Note:</strong> Desktop PCs and laptops have enhanced data collection for more detailed monitoring and analytics.
       </p>
     </div>
   );

@@ -40,13 +40,23 @@ export const deviceTypeMetrics = [
     type: "Laptop",
     count: 98,
     compliance: 89,
-    recentIssues: 7
+    recentIssues: 7,
+    models: [
+      { name: "ThinkPad X1", count: 45, osVersion: "Windows 11" },
+      { name: "MacBook Pro", count: 32, osVersion: "macOS Ventura" },
+      { name: "Dell XPS", count: 21, osVersion: "Windows 10" }
+    ]
   },
   {
     type: "Desktop PC",
     count: 64,
     compliance: 95,
-    recentIssues: 2
+    recentIssues: 2,
+    models: [
+      { name: "Dell OptiPlex", count: 28, osVersion: "Windows 11" },
+      { name: "HP EliteDesk", count: 22, osVersion: "Windows 10" },
+      { name: "iMac", count: 14, osVersion: "macOS Ventura" }
+    ]
   },
   {
     type: "Tablet",
@@ -61,3 +71,28 @@ export const deviceTypeMetrics = [
     recentIssues: 12
   }
 ];
+
+// PC and Laptop specific metrics
+export const computerMetrics = {
+  totalCount: 162, // Laptops + Desktop PCs
+  osDistribution: [
+    { name: "Windows 11", count: 73, percentage: 45 },
+    { name: "Windows 10", count: 43, percentage: 27 },
+    { name: "macOS Ventura", count: 32, percentage: 20 },
+    { name: "macOS Monterey", count: 8, percentage: 5 },
+    { name: "Linux", count: 6, percentage: 3 }
+  ],
+  updateStatus: {
+    upToDate: 132,
+    needsUpdate: 24,
+    critical: 6
+  },
+  averageAge: {
+    laptop: 2.4, // years
+    desktopPC: 3.2 // years
+  },
+  securityStatus: {
+    secured: 148,
+    atRisk: 14
+  }
+};
