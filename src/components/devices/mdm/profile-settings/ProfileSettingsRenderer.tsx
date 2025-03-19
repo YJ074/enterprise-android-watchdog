@@ -1,6 +1,8 @@
 
 import { SecuritySettings } from "./SecuritySettings";
 import { WifiSettings } from "./WifiSettings";
+import { VpnSettings } from "./VpnSettings";
+import { EmailSettings } from "./EmailSettings";
 
 interface ProfileSettingsRendererProps {
   type?: string;
@@ -28,6 +30,20 @@ export function ProfileSettingsRenderer({
         <WifiSettings 
           settings={settings} 
           onSettingsChange={onSettingsChange} 
+        />
+      );
+    case "vpn":
+      return (
+        <VpnSettings
+          settings={settings}
+          onSettingsChange={onSettingsChange}
+        />
+      );
+    case "email":
+      return (
+        <EmailSettings
+          settings={settings}
+          onSettingsChange={onSettingsChange}
         />
       );
     default:

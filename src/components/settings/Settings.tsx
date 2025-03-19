@@ -8,6 +8,7 @@ import { ApiSettings } from "./tabs/ApiSettings";
 import { EnterpriseSettings } from "./tabs/EnterpriseSettings";
 import { MonitoringSettings } from "./tabs/MonitoringSettings";
 import { DataAccessSettings } from "./tabs/DataAccessSettings";
+import { AnalyticsSettings } from "./tabs/AnalyticsSettings";
 import { useAuth } from "@/context/AuthContext";
 
 export function Settings() {
@@ -30,6 +31,7 @@ export function Settings() {
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
           <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="api">API & Integrations</TabsTrigger>
           <TabsTrigger value="enterprise">Enterprise</TabsTrigger>
           {isAdmin && <TabsTrigger value="data-access">Data Access</TabsTrigger>}
@@ -49,6 +51,10 @@ export function Settings() {
         
         <TabsContent value="monitoring" className="space-y-4">
           <MonitoringSettings />
+        </TabsContent>
+        
+        <TabsContent value="analytics" className="space-y-4">
+          <AnalyticsSettings />
         </TabsContent>
         
         <TabsContent value="api" className="space-y-4">
