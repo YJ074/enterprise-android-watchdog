@@ -30,8 +30,8 @@ export function Header({ toggleSidebar, sidebarCollapsed }: HeaderProps) {
   };
 
   return (
-    <header className="h-16 px-6 border-b flex items-center justify-between bg-white">
-      <div className="flex items-center gap-4">
+    <header className="h-16 px-4 md:px-6 border-b flex items-center justify-between bg-white">
+      <div className="flex items-center gap-2 md:gap-4">
         <Button 
           variant="ghost" 
           size="icon" 
@@ -44,8 +44,8 @@ export function Header({ toggleSidebar, sidebarCollapsed }: HeaderProps) {
         </Button>
         
         <div className={cn(
-          "relative", 
-          sidebarCollapsed ? "w-80" : "w-64",
+          "relative hidden md:block", 
+          sidebarCollapsed ? "w-64 lg:w-80" : "w-48 lg:w-64",
           "transition-all duration-300"
         )}>
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -54,10 +54,19 @@ export function Header({ toggleSidebar, sidebarCollapsed }: HeaderProps) {
             className="pl-8 w-full bg-muted/30 border-muted"
           />
         </div>
+        
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="md:hidden"
+          aria-label="Search"
+        >
+          <Search className="h-5 w-5" />
+        </Button>
       </div>
       
-      <div className="flex items-center gap-4">
-        <Button variant="outline" size="icon" className="relative">
+      <div className="flex items-center gap-2 md:gap-4">
+        <Button variant="outline" size="icon" className="relative hidden sm:inline-flex">
           <BellIcon className="h-5 w-5" />
           <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">
             3
@@ -72,7 +81,9 @@ export function Header({ toggleSidebar, sidebarCollapsed }: HeaderProps) {
                   {user?.email ? user.email.substring(0, 2).toUpperCase() : "AD"}
                 </AvatarFallback>
               </Avatar>
-              <div className="text-sm font-medium">{user?.email ? user.email.split('@')[0] : "Admin"}</div>
+              <div className="text-sm font-medium hidden sm:block">
+                {user?.email ? user.email.split('@')[0] : "Admin"}
+              </div>
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
