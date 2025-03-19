@@ -58,7 +58,7 @@ export const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
       case 'error':
         return 'destructive';
       case 'warning':
-        return 'warning';
+        return 'default';
       case 'info':
         return 'secondary';
       default:

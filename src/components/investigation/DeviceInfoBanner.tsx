@@ -18,11 +18,11 @@ export const DeviceInfoBanner: React.FC<DeviceInfoBannerProps> = ({ device }) =>
   const [expanded, setExpanded] = React.useState(false);
 
   const getDeviceIcon = () => {
-    const type = device.type?.toLowerCase() || '';
+    const modelType = device.model.toLowerCase();
     
-    if (type.includes('laptop') || type.includes('computer')) {
+    if (modelType.includes('laptop') || modelType.includes('computer')) {
       return <Laptop className="h-5 w-5 text-blue-600" />;
-    } else if (type.includes('tablet')) {
+    } else if (modelType.includes('tablet')) {
       return <Tablet className="h-5 w-5 text-green-600" />;
     } else {
       return <Smartphone className="h-5 w-5 text-purple-600" />;
@@ -62,7 +62,7 @@ export const DeviceInfoBanner: React.FC<DeviceInfoBannerProps> = ({ device }) =>
             {device.location && (
               <div className="flex items-center gap-1 bg-white px-2 py-1 rounded-md shadow-sm">
                 <MapPin className="h-4 w-4 text-gray-500" />
-                <span>{device.location}</span>
+                <span>{device.location.address}</span>
               </div>
             )}
             

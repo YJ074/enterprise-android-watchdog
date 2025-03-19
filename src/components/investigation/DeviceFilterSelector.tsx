@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Check, ChevronDown, LaptopIcon, SmartphoneIcon, TabletIcon, DevicesIcon } from 'lucide-react';
+import { Check, ChevronDown, LaptopIcon, SmartphoneIcon, TabletIcon, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -51,7 +50,7 @@ export function DeviceFilterSelector({
     } else if (typeLC.includes('phone') || typeLC.includes('mobile')) {
       return <SmartphoneIcon className="h-4 w-4 mr-2 text-purple-500" />;
     } else {
-      return <DevicesIcon className="h-4 w-4 mr-2 text-gray-500" />;
+      return <Smartphone className="h-4 w-4 mr-2 text-gray-500" />;
     }
   };
 
@@ -81,7 +80,7 @@ export function DeviceFilterSelector({
           className={cn("justify-between", className)}
         >
           <div className="flex items-center gap-1 truncate">
-            <DevicesIcon className="h-4 w-4 mr-1" />
+            <Smartphone className="h-4 w-4 mr-1" />
             {selectedDevices.length === 0
               ? "Select devices..."
               : selectedDevices.length === 1
