@@ -10,10 +10,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MultiSelect } from "../ui/multi-select";
-import { Loader2 } from "lucide-react";
+import { AlertCircle, CalendarRange, Loader2, Save, Shield } from "lucide-react";
 import { useDevices } from "@/hooks/useDevices";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useToast } from "@/components/ui/use-toast";
 
 const investigationSchema = z.object({
   title: z.string().min(3, { message: "Title must be at least 3 characters" }),
@@ -26,6 +29,7 @@ type FormValues = z.infer<typeof investigationSchema>;
 export function CreateInvestigationForm() {
   const { createInvestigation } = useInvestigation();
   const { devices } = useDevices();
+  const { toast } = useToast();
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date(),
     to: undefined,
@@ -43,6 +47,11 @@ export function CreateInvestigationForm() {
   
   const onSubmit = async (data: FormValues) => {
     if (!dateRange?.from) {
+      toast({
+        title: "Date Range Required",
+        description: "Please select a start date for the investigation",
+        variant: "destructive",
+      });
       return;
     }
     
@@ -60,9 +69,18 @@ export function CreateInvestigationForm() {
       });
       
       form.reset();
+      toast({
+        title: "Investigation Created",
+        description: "Your investigation has been created successfully.",
+      });
       // Close dialog (would need DialogClose from radix-ui)
     } catch (error) {
       console.error("Error creating investigation:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create investigation. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -75,80 +93,109 @@ export function CreateInvestigationForm() {
   }));
   
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Investigation Title</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder="e.g., Security Breach Investigation" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea 
-                  {...field} 
-                  placeholder="Describe the purpose of this investigation"
-                  rows={3}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="deviceIds"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Devices to Investigate</FormLabel>
-              <FormControl>
-                <MultiSelect
-                  options={deviceOptions}
-                  values={field.value.map(id => 
-                    deviceOptions.find(d => d.value === id) || { value: id, label: id }
-                  )}
-                  onChange={(options) => field.onChange(options.map(o => o.value))}
-                  placeholder="Select devices..."
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <div className="space-y-2">
-          <FormLabel>Investigation Date Range</FormLabel>
-          <DateRangePicker 
-            value={dateRange}
-            onChange={setDateRange}
-            className="w-full"
-          />
-          {!dateRange?.from && (
-            <p className="text-sm text-destructive">Please select a start date</p>
-          )}
-        </div>
-        
-        <div className="flex justify-end pt-4">
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Create Investigation
-          </Button>
-        </div>
-      </form>
-    </Form>
+    <Card className="shadow-sm border-gray-200">
+      <CardHeader className="bg-gray-50 border-b pb-3">
+        <CardTitle className="text-xl flex items-center gap-2">
+          <Shield className="h-5 w-5 text-primary" />
+          New Investigation
+        </CardTitle>
+        <CardDescription>
+          Create a new investigation to analyze device activities and detect threats
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="pt-6">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <Alert className="mb-4 bg-blue-50 border-blue-200 text-blue-800">
+              <AlertCircle className="h-4 w-4 text-blue-800" />
+              <AlertDescription>
+                All investigation activities are logged and subject to compliance review
+              </AlertDescription>
+            </Alert>
+          
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Investigation Title</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="e.g., Security Breach Investigation" className="border-gray-300" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      {...field} 
+                      placeholder="Describe the purpose of this investigation"
+                      rows={3}
+                      className="border-gray-300 resize-none"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="deviceIds"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Devices to Investigate</FormLabel>
+                  <FormControl>
+                    <MultiSelect
+                      options={deviceOptions}
+                      values={field.value.map(id => 
+                        deviceOptions.find(d => d.value === id) || { value: id, label: id }
+                      )}
+                      onChange={(options) => field.onChange(options.map(o => o.value))}
+                      placeholder="Select devices..."
+                      className="border-gray-300"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <div className="space-y-2">
+              <FormLabel className="flex items-center gap-1">
+                <CalendarRange className="h-4 w-4" />
+                Investigation Date Range
+              </FormLabel>
+              <DateRangePicker 
+                value={dateRange}
+                onChange={setDateRange}
+                className="w-full border-gray-300 rounded-md"
+              />
+              {!dateRange?.from && (
+                <p className="text-sm text-destructive">Please select a start date</p>
+              )}
+            </div>
+            
+            <CardFooter className="px-0 pb-0 pt-4 flex justify-end gap-2">
+              <Button type="button" variant="outline">
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting} className="gap-2">
+                {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
+                <Save className="h-4 w-4" />
+                Create Investigation
+              </Button>
+            </CardFooter>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { Switch } from "@/components/ui/switch";
+import { TwoFactorAuthSetup } from "@/components/auth/TwoFactorAuthSetup";
 
 export function TwoFactorCard() {
   const { toast } = useToast();
@@ -20,13 +21,15 @@ export function TwoFactorCard() {
   
   const handleToggleTwoFactor = () => {
     if (isEnabled) {
-      // Handle disabling
-      setIsEnabled(false);
-      toast({
-        title: "Two-factor authentication disabled",
-        description: "Your account is now less secure.",
-        variant: "destructive",
-      });
+      // Handle disabling with confirmation
+      if (confirm("Disabling two-factor authentication will make your account less secure. Are you sure?")) {
+        setIsEnabled(false);
+        toast({
+          title: "Two-factor authentication disabled",
+          description: "Your account is now less secure.",
+          variant: "destructive",
+        });
+      }
     } else {
       // Open setup flow
       setIsSetupOpen(true);
@@ -46,7 +49,7 @@ export function TwoFactorCard() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <ShieldCheck className="h-5 w-5" />
+          <ShieldCheck className="h-5 w-5 text-primary" />
           Two-Factor Authentication
         </CardTitle>
         <CardDescription>
@@ -55,23 +58,10 @@ export function TwoFactorCard() {
       </CardHeader>
       <CardContent>
         {isSetupOpen ? (
-          <div className="space-y-4">
-            <div className="border rounded-md p-4 text-center">
-              <p className="text-muted-foreground mb-2">Scan this QR code with your authenticator app</p>
-              <div className="inline-block bg-gray-200 w-32 h-32 mx-auto mb-2"></div>
-              <p className="text-xs text-muted-foreground">
-                Or enter code: ABCD-EFGH-IJKL-MNOP
-              </p>
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setIsSetupOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleSetupComplete}>
-                Complete Setup
-              </Button>
-            </div>
-          </div>
+          <TwoFactorAuthSetup 
+            onComplete={handleSetupComplete}
+            onCancel={() => setIsSetupOpen(false)}
+          />
         ) : (
           <div className="flex items-center justify-between py-2">
             <div>
