@@ -67,15 +67,15 @@ export const InvestigationContent: React.FC<InvestigationContentProps> = ({ devi
               <div>
                 <p className="text-sm font-medium mb-2">Log Types</p>
                 <LogTypeSelector
-                  selectedLogTypes={selectedLogTypes}
+                  selectedTypes={selectedLogTypes}
                   onChange={setSelectedLogTypes}
                 />
               </div>
               <div>
                 <p className="text-sm font-medium mb-2">Date Range</p>
                 <DateRangePicker
-                  dateRange={dateRange}
-                  onDateRangeChange={setDateRange}
+                  value={dateRange}
+                  onChange={setDateRange}
                 />
               </div>
             </div>
