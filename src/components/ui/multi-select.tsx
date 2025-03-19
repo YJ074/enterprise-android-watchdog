@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
 import { Command as CommandPrimitive } from "cmdk";
+import { cn } from "@/lib/utils";
 
 type Option = {
   value: string;
@@ -16,6 +17,7 @@ interface MultiSelectProps {
   onChange: (values: Option[]) => void;
   placeholder?: string;
   disabled?: boolean;
+  className?: string; // Added className property
 }
 
 export function MultiSelect({
@@ -24,6 +26,7 @@ export function MultiSelect({
   onChange,
   placeholder = "Select...",
   disabled = false,
+  className, // Added className parameter
 }: MultiSelectProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
@@ -43,7 +46,7 @@ export function MultiSelect({
 
   return (
     <Command
-      className="overflow-visible bg-transparent"
+      className={cn("overflow-visible bg-transparent", className)} // Apply className here
       onKeyDown={(e) => {
         if (e.key === "Escape") {
           e.preventDefault();
