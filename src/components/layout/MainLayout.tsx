@@ -14,21 +14,19 @@ export function MainLayout({ children }: MainLayoutProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  // If we're at a blank page or investigation route with no content, redirect to dashboard
+  // Make sure we have content on the page
   useEffect(() => {
-    const isBlankPage = document.body.innerHTML.trim() === '';
+    // Check if we're on the index route with no content
+    const isBlankPage = document.querySelector('main')?.innerHTML.trim() === '';
     
-    if (isBlankPage || 
-        (location.pathname.includes('investigation') && !document.querySelector('main')?.innerHTML.trim())) {
+    if (isBlankPage) {
       toast({
-        title: "Redirecting to Dashboard",
-        description: "You were on a blank page. Redirecting to the dashboard with Software view.",
+        title: "Refreshing Dashboard",
+        description: "Loading the Software Dashboard view...",
       });
       
-      // Small delay to allow the toast to show
-      setTimeout(() => {
-        navigate('/');
-      }, 500);
+      // Force a refresh to ensure content is displayed
+      window.location.reload();
     }
   }, [location.pathname, navigate, toast]);
 

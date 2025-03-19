@@ -7,7 +7,7 @@ import { metrics, devices } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { DeviceListTable } from "../devices/DeviceListTable";
 import { Link } from "react-router-dom";
-import { AlertTriangle, BarChart3, Plus, Smartphone, PackageOpen } from "lucide-react";
+import { AlertTriangle, BarChart3, Plus, Smartphone, PackageOpen, RefreshCw } from "lucide-react";
 import { AddDeviceDialog } from "../devices/AddDeviceDialog";
 import { differenceInHours } from "date-fns";
 import { InactiveDevicesCard } from "./InactiveDevicesCard";
@@ -35,13 +35,30 @@ export function Dashboard() {
   const [activeTab, setActiveTab] = useState("software");
   const { toast } = useToast();
   
-  // Use effect to show a toast notification about the software tab being active
+  // Use effect to ensure the software tab is really active and visible
   useEffect(() => {
-    toast({
-      title: "Software Management Active",
-      description: "You're viewing the Software Management section. Use the tabs above to navigate to other sections.",
-    });
-  }, []);
+    // Set software tab as active and show confirmation toast
+    setActiveTab("software");
+    
+    setTimeout(() => {
+      toast({
+        title: "Software Dashboard Loaded",
+        description: "You're viewing the Software Management section. If content is missing, use the Refresh button.",
+      });
+    }, 300);
+  }, [toast]);
+  
+  // Simple refresh function
+  const refreshView = () => {
+    setActiveTab("none");
+    setTimeout(() => {
+      setActiveTab("software");
+      toast({
+        title: "View Refreshed",
+        description: "The Software Dashboard has been refreshed.",
+      });
+    }, 100);
+  };
   
   // Dummy handlers for the device list table
   const handleSelectDevice = () => {
@@ -57,6 +74,10 @@ export function Dashboard() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <div className="flex gap-2">
+          <Button variant="outline" onClick={refreshView}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh View
+          </Button>
           <Button asChild variant="outline">
             <Link to="/alerts">
               <AlertTriangle className="h-4 w-4 mr-2" />

@@ -3,24 +3,51 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { Dashboard } from "@/components/dashboard/Dashboard";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { BarChart3, PackageOpen } from "lucide-react";
+import { BarChart3, PackageOpen, RefreshCw } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 const Index = () => {
   // Mock last update time - in a real app, this would come from your API or data service
   const lastUpdateTime = new Date();
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const [isVisible, setIsVisible] = useState(false);
 
-  // Show a toast when the page loads to guide the user
+  // Ensure content is visible and active
   useEffect(() => {
+    // Show a welcome toast
     toast({
       title: "Welcome to the Dashboard",
-      description: "The Software Management tab is now visible by default. Explore other tabs using the navigation above.",
+      description: "The Software Management tab is now visible. If you don't see content, click Refresh View.",
     });
+    
+    // Force the software tab to be selected after the component mounts
+    setTimeout(() => {
+      const softwareTab = document.querySelector('[value="software"]');
+      if (softwareTab instanceof HTMLElement) {
+        softwareTab.click();
+        setIsVisible(true);
+      }
+    }, 100);
   }, [toast]);
+
+  const refreshView = () => {
+    // This will force the Dashboard to re-render
+    setIsVisible(false);
+    setTimeout(() => {
+      setIsVisible(true);
+      toast({
+        title: "View Refreshed",
+        description: "The dashboard has been refreshed with Software view.",
+      });
+      
+      // Make sure software tab is active
+      const softwareTab = document.querySelector('[value="software"]');
+      if (softwareTab instanceof HTMLElement) {
+        softwareTab.click();
+      }
+    }, 100);
+  };
 
   return (
     <MainLayout>
@@ -34,7 +61,6 @@ const Index = () => {
             size="sm" 
             className="flex items-center gap-1"
             onClick={() => {
-              // Find the metrics tab and click it programmatically
               const metricsTab = document.querySelector('[value="metrics"]');
               if (metricsTab instanceof HTMLElement) {
                 metricsTab.click();
@@ -45,11 +71,19 @@ const Index = () => {
             View Metrics
           </Button>
           <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex items-center gap-1"
+            onClick={refreshView}
+          >
+            <RefreshCw className="h-4 w-4" />
+            Refresh View
+          </Button>
+          <Button 
             variant="default" 
             size="sm" 
             className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 animate-pulse"
             onClick={() => {
-              // Find the software tab and click it programmatically
               const softwareTab = document.querySelector('[value="software"]');
               if (softwareTab instanceof HTMLElement) {
                 softwareTab.click();
@@ -67,7 +101,7 @@ const Index = () => {
           </Button>
         </div>
       </div>
-      <Dashboard />
+      <Dashboard key={isVisible ? "visible" : "hidden"} />
     </MainLayout>
   );
 };
