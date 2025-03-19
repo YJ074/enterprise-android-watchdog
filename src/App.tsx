@@ -7,7 +7,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
 import { Toaster } from "@/components/ui/toaster";
-import { ThemeProvider } from "@/components/ui/theme-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 
 // Pages
 import LoginPage from './pages/LoginPage';
@@ -16,6 +16,7 @@ import DevicesPage from "./pages/DevicesPage";
 import DeviceDetailPage from "./pages/DeviceDetailPage";
 import MdmProfilesPage from "./pages/MdmProfilesPage";
 import ComputerMdmPage from "./pages/ComputerMdmPage"; // New MDM page
+import InvestigationPage from "./pages/InvestigationPage"; // Investigation page
 import NotFound from "./pages/NotFound";
 import "./App.css";
 import Index from "./pages/Index";
@@ -62,6 +63,7 @@ export default function App() {
               <Route path="/security" element={<ProtectedRoute><SecurityDashboardPage /></ProtectedRoute>} />
               <Route path="/alerts" element={<ProtectedRoute><AlertsPage /></ProtectedRoute>} />
               <Route path="/settings/*" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
+              <Route path="/investigation" element={<ProtectedRoute><InvestigationPage /></ProtectedRoute>} />
               
               {/* 404 Route */}
               <Route path="*" element={<NotFound />} />

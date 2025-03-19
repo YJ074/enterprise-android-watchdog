@@ -5,7 +5,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell 
 } from "recharts";
-import { Shield, Monitor, Laptop, AlertTriangle } from "lucide-react";
+import { Shield, Monitor, Laptop, AlertTriangle, Phone, MessageSquare, Mail } from "lucide-react";
 import { useComputerDevices } from "@/hooks/useComputerDevices";
 
 export function MdmDashboard({ profiles, getDeviceProfiles }) {
@@ -30,6 +30,20 @@ export function MdmDashboard({ profiles, getDeviceProfiles }) {
       getDeviceProfiles(device.id).some(p => p.id === profile.id)
     ).length
   }));
+  
+  // Communication tracking metrics
+  const communicationMetrics = [
+    { name: "Call Logs", value: 147, color: "#FF8042" },
+    { name: "WhatsApp Messages", value: 283, color: "#00C49F" },
+    { name: "Emails", value: 95, color: "#0088FE" },
+  ];
+  
+  // Media access metrics
+  const mediaMetrics = [
+    { name: "Screenshots", value: 62, color: "#FFBB28" },
+    { name: "Photos", value: 124, color: "#FF6B6B" },
+    { name: "Videos", value: 38, color: "#8884d8" },
+  ];
   
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
@@ -71,6 +85,48 @@ export function MdmDashboard({ profiles, getDeviceProfiles }) {
             <div className="text-2xl font-bold">{complianceRate}%</div>
             <p className="text-xs text-muted-foreground">
               {compliantDevices} of {computerDevices.length} devices compliant
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+      
+      {/* New monitoring metrics cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Call Monitoring</CardTitle>
+            <Phone className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">147</div>
+            <p className="text-xs text-muted-foreground">
+              87 voice calls, 60 WhatsApp calls tracked
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Message Tracking</CardTitle>
+            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">283</div>
+            <p className="text-xs text-muted-foreground">
+              WhatsApp, SMS, and social media messages
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Email Monitoring</CardTitle>
+            <Mail className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">95</div>
+            <p className="text-xs text-muted-foreground">
+              Emails tracked across devices
             </p>
           </CardContent>
         </Card>
@@ -126,6 +182,67 @@ export function MdmDashboard({ profiles, getDeviceProfiles }) {
                   >
                     {profileApplicationData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Communication and Media Tracking Charts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardTitle>Communication Tracking</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={communicationMetrics}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, value }) => `${name}: ${value}`}
+                  >
+                    {communicationMetrics.map((entry, index) => (
+                      <Cell key={`comm-cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardTitle>Media Monitoring</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={mediaMetrics}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, value }) => `${name}: ${value}`}
+                  >
+                    {mediaMetrics.map((entry, index) => (
+                      <Cell key={`media-cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
                   <Tooltip />
