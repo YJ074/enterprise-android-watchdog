@@ -15,7 +15,7 @@ export function SoftwareDashboardError({ onRefresh }: SoftwareDashboardErrorProp
       <p className="text-gray-600 mb-6">
         There was an issue loading the software inventory data. Please try refreshing.
       </p>
-      <Button onClick={onRefresh} variant="outline" size="md" className="mx-auto border-red-300 hover:bg-red-50">
+      <Button onClick={onRefresh} variant="outline" size="default" className="mx-auto border-red-300 hover:bg-red-50">
         <RefreshCw className="mr-2 h-4 w-4 text-red-500" />
         Refresh Dashboard
       </Button>
