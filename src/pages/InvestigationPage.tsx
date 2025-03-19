@@ -1,5 +1,5 @@
 
-import Layout from "@/components/layout/Layout";
+import { MainLayout } from "@/components/layout/MainLayout";
 import { InvestigationConsole } from "@/components/investigation/InvestigationConsole";
 import { Button } from "@/components/ui/button";
 import { 
@@ -15,7 +15,7 @@ export default function InvestigationPage() {
   const [activeTab, setActiveTab] = useState("investigation");
 
   return (
-    <Layout>
+    <MainLayout>
       <Helmet>
         <title>Advanced Investigation | MDM Dashboard</title>
       </Helmet>
@@ -50,6 +50,6 @@ export default function InvestigationPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </Layout>
+    </MainLayout>
   );
 }
