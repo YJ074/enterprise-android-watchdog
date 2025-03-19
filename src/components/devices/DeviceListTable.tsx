@@ -5,6 +5,8 @@ import { Link } from "react-router-dom";
 import { format, parseISO } from "date-fns";
 import { DeviceBatteryIndicator } from "@/components/dashboard/DeviceBatteryIndicator";
 import { DeviceBadge } from "@/components/dashboard/DeviceBadge";
+import { DeviceRiskBadge } from "./DeviceRiskBadge";
+import { calculateDeviceRiskScore } from "@/hooks/useDeviceRiskAssessment";
 import { Device } from "@/lib/types/device.types";
 
 interface DeviceListTableProps {
@@ -39,14 +41,20 @@ export function DeviceListTable({
             <TableHead className="w-12">
               <Checkbox 
                 checked={allSelected} 
-                indeterminate={someSelected}
                 onCheckedChange={onSelectAll}
                 aria-label="Select all devices"
+                ref={(checkbox) => {
+                  // This is needed for the indeterminate state
+                  if (checkbox) {
+                    checkbox.indeterminate = someSelected;
+                  }
+                }}
               />
             </TableHead>
             <TableHead>Device</TableHead>
             <TableHead>User</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Risk Score</TableHead>
             <TableHead>OS Version</TableHead>
             <TableHead>Battery</TableHead>
             <TableHead>Last Seen</TableHead>
@@ -55,6 +63,7 @@ export function DeviceListTable({
         <TableBody>
           {devices.map((device) => {
             const isSelected = selectedDevices.some(d => d.id === device.id);
+            const riskScore = calculateDeviceRiskScore(device);
             
             return (
               <TableRow key={device.id} className={isSelected ? "bg-muted/30" : undefined}>
@@ -77,6 +86,9 @@ export function DeviceListTable({
                 </TableCell>
                 <TableCell>
                   <DeviceBadge status={device.status} />
+                </TableCell>
+                <TableCell>
+                  <DeviceRiskBadge riskScore={riskScore} compact />
                 </TableCell>
                 <TableCell>{device.osVersion}</TableCell>
                 <TableCell>

@@ -1,6 +1,6 @@
 
-import { useDevicesApi } from './useDevicesApi';
-import { useDeviceApi } from './useDevicesApi';
+import { useDevicesApi } from './api/devices/useDevicesApi';
+import { useDeviceApi } from './api/devices/useDeviceApi';
 import { Device } from '@/lib/types/device.types';
 
 export function useDevices() {
