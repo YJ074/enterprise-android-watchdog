@@ -3,7 +3,7 @@ import { useDevicesApi } from './api/devices/useDevicesApi';
 import { useDeviceApi } from './api/devices/useDeviceApi';
 
 // Re-export the types from the devices/types file
-export type { Device, NewDevice, UpdateDevice } from './devices/types';
+export type { Device, NewDevice, UpdateDevice, MdmProfile, NewMdmProfile, MdmProfileAssignment } from './devices/types';
 
 export function useDevices() {
   const { 
