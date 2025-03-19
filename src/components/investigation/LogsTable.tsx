@@ -27,6 +27,7 @@ export const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
     getBadgeVariant
   } = useLogsTable(logs);
 
+  // Handlers for filter and export actions
   const handleFilterChange = (filter: string) => {
     // Filter implementation can be added here
     console.log('Filter changed:', filter);
@@ -39,12 +40,14 @@ export const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
 
   return (
     <div className="border rounded-md shadow-sm">
+      {/* Use the filter component with proper handlers */}
       <LogsTableFilter 
         onFilterChange={handleFilterChange} 
         onExport={handleExport} 
       />
       
       <Table>
+        {/* Header component with sorting functionality */}
         <LogsTableHeader 
           sortField={sortField}
           sortDirection={sortDirection}
@@ -60,12 +63,14 @@ export const LogsTable: React.FC<LogsTableProps> = ({ logs }) => {
           ) : (
             sortedLogs.map((log) => (
               <React.Fragment key={log.id}>
+                {/* Individual log row component */}
                 <LogRow 
                   log={log}
                   expandedLog={expandedLog}
                   toggleLogExpand={toggleLogExpand}
                   getBadgeVariant={getBadgeVariant}
                 />
+                {/* Conditional expanded content */}
                 {expandedLog === log.id && (
                   <ExpandedLogContent content={log.content} />
                 )}
