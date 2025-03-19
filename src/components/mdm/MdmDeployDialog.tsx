@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -18,7 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Send, Laptop, Desktop, Monitor } from "lucide-react";
+import { Send, Laptop, Monitor } from "lucide-react";
 import { Device } from "@/lib/types/device.types";
 import { formatDistanceToNow } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -66,7 +65,7 @@ export function MdmDeployDialog({ profile, devices, onDeploy }: MdmDeployDialogP
     if (model.includes('laptop') || model.includes('macbook') || model.includes('thinkpad')) {
       return <Laptop className="h-4 w-4" />;
     } else if (model.includes('desktop') || model.includes('tower') || model.includes('workstation')) {
-      return <Desktop className="h-4 w-4" />;
+      return <Monitor className="h-4 w-4" />;
     }
     return <Monitor className="h-4 w-4" />;
   };

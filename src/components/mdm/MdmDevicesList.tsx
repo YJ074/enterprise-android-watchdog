@@ -13,7 +13,6 @@ import {
   Shield, 
   Monitor, 
   Laptop, 
-  Desktop, 
   AlertTriangle, 
   Info,
   Lock
@@ -36,7 +35,7 @@ export function MdmDevicesList({ getDeviceProfiles }) {
     if (model.includes('laptop') || model.includes('macbook') || model.includes('thinkpad')) {
       return <Laptop className="h-4 w-4" />;
     } else if (model.includes('desktop') || model.includes('tower') || model.includes('workstation')) {
-      return <Desktop className="h-4 w-4" />;
+      return <Monitor className="h-4 w-4" />;
     }
     return <Monitor className="h-4 w-4" />;
   };
@@ -72,7 +71,7 @@ export function MdmDevicesList({ getDeviceProfiles }) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Windows Computers</CardTitle>
-            <Desktop className="h-4 w-4 text-muted-foreground" />
+            <Monitor className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -138,7 +137,7 @@ export function MdmDevicesList({ getDeviceProfiles }) {
                     {isCompliant ? (
                       <HoverCard>
                         <HoverCardTrigger>
-                          <Badge variant="success" className="bg-green-100 text-green-800 hover:bg-green-200 cursor-help flex items-center gap-1">
+                          <Badge className="bg-green-100 text-green-800 hover:bg-green-200 cursor-help flex items-center gap-1">
                             <Shield className="h-3 w-3" />
                             <span>Compliant</span>
                           </Badge>

@@ -1,11 +1,10 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell 
 } from "recharts";
-import { Shield, Desktop, Laptop, AlertTriangle } from "lucide-react";
+import { Shield, Monitor, Laptop, AlertTriangle } from "lucide-react";
 import { useComputerDevices } from "@/hooks/useComputerDevices";
 
 export function MdmDashboard({ profiles, getDeviceProfiles }) {
@@ -39,7 +38,7 @@ export function MdmDashboard({ profiles, getDeviceProfiles }) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Managed Computers</CardTitle>
-            <Desktop className="h-4 w-4 text-muted-foreground" />
+            <Monitor className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{computerDevices.length}</div>
