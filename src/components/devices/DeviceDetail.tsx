@@ -81,6 +81,9 @@ export function DeviceDetail() {
     });
   };
 
+  // Check for location using the correct property structure
+  const hasLocation = device.location && device.location.latitude && device.location.longitude;
+
   return (
     <div className="space-y-6">
       <DeviceHeader 
@@ -92,7 +95,7 @@ export function DeviceDetail() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <DeviceInfoCard device={device} />
         <DeviceStorageCard device={device} />
-        {device.location_latitude && device.location_longitude && (
+        {hasLocation && (
           <DeviceLocationCard device={device} />
         )}
       </div>

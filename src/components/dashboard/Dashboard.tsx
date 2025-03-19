@@ -11,6 +11,7 @@ import { AlertTriangle, Smartphone, Plus } from "lucide-react";
 import { AddDeviceDialog } from "../devices/AddDeviceDialog";
 import { differenceInHours } from "date-fns";
 import { InactiveDevicesCard } from "./InactiveDevicesCard";
+import { useState } from "react";
 
 export function Dashboard() {
   // Calculate inactive devices (devices not seen in the last 24 hours)
@@ -19,6 +20,18 @@ export function Dashboard() {
     const hoursSinceLastSeen = differenceInHours(new Date(), lastSeen);
     return hoursSinceLastSeen > 24 || device.status === 'offline';
   });
+
+  // Add state for selected devices to pass to DeviceListTable
+  const [selectedDevices, setSelectedDevices] = useState([]);
+  
+  // Dummy handlers for the device list table
+  const handleSelectDevice = () => {
+    // This is a placeholder since we don't need device selection in the dashboard
+  };
+  
+  const handleSelectAll = () => {
+    // This is a placeholder since we don't need bulk selection in the dashboard
+  };
 
   return (
     <div className="space-y-6">
@@ -65,7 +78,12 @@ export function Dashboard() {
         <RecentActivityList />
         <div>
           <h2 className="text-xl font-semibold mb-4">Device Overview</h2>
-          <DeviceListTable devices={devices} />
+          <DeviceListTable 
+            devices={devices} 
+            selectedDevices={selectedDevices}
+            onSelectDevice={handleSelectDevice}
+            onSelectAll={handleSelectAll}
+          />
         </div>
       </div>
     </div>

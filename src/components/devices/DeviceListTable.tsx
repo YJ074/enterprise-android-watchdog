@@ -8,6 +8,7 @@ import { DeviceBadge } from "@/components/dashboard/DeviceBadge";
 import { DeviceRiskBadge } from "./DeviceRiskBadge";
 import { calculateDeviceRiskScore } from "@/hooks/useDeviceRiskAssessment";
 import { Device } from "@/lib/types/device.types";
+import { useRef, useEffect } from "react";
 
 interface DeviceListTableProps {
   devices: Device[];
@@ -18,9 +19,9 @@ interface DeviceListTableProps {
 
 export function DeviceListTable({ 
   devices, 
-  selectedDevices, 
-  onSelectDevice, 
-  onSelectAll 
+  selectedDevices = [], // Default to empty array if not provided
+  onSelectDevice = () => {}, // Default no-op if not provided
+  onSelectAll = () => {}  // Default no-op if not provided
 }: DeviceListTableProps) {
   if (devices.length === 0) {
     return (
@@ -32,6 +33,15 @@ export function DeviceListTable({
 
   const allSelected = devices.length > 0 && selectedDevices.length === devices.length;
   const someSelected = selectedDevices.length > 0 && selectedDevices.length < devices.length;
+  const checkboxRef = useRef<HTMLButtonElement>(null);
+
+  // Use useEffect to set the indeterminate property after render
+  useEffect(() => {
+    if (checkboxRef.current) {
+      // We need to use DOM API to set indeterminate
+      (checkboxRef.current as any).indeterminate = someSelected;
+    }
+  }, [someSelected]);
 
   return (
     <div className="rounded-md border">
@@ -43,12 +53,7 @@ export function DeviceListTable({
                 checked={allSelected} 
                 onCheckedChange={onSelectAll}
                 aria-label="Select all devices"
-                ref={(checkbox) => {
-                  // This is needed for the indeterminate state
-                  if (checkbox) {
-                    checkbox.indeterminate = someSelected;
-                  }
-                }}
+                ref={checkboxRef}
               />
             </TableHead>
             <TableHead>Device</TableHead>

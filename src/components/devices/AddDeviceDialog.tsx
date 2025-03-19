@@ -24,7 +24,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { type NewDevice } from "@/hooks/useDevices";
+import { NewDevice } from "@/hooks/devices/types";
 
 const formSchema = z.object({
   name: z.string().min(3, { message: "Device name must be at least 3 characters." }),
