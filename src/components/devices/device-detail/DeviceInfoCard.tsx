@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DeviceBadge } from "@/components/dashboard/DeviceBadge";
-import { Smartphone, BarChart, Clock, AlertTriangle } from "lucide-react";
+import { Smartphone, BarChart, Clock, AlertTriangle, Laptop, Monitor, Tablet } from "lucide-react";
 import { format } from "date-fns";
 
 type DeviceInfoCardProps = {
@@ -14,6 +14,20 @@ type DeviceInfoCardProps = {
 };
 
 export function DeviceInfoCard({ device }: DeviceInfoCardProps) {
+  // Get appropriate device icon based on model name
+  const getDeviceIcon = () => {
+    const modelLower = device.model.toLowerCase();
+    if (modelLower.includes('macbook') || modelLower.includes('laptop') || modelLower.includes('thinkpad')) {
+      return <Laptop className="h-5 w-5 text-muted-foreground" />;
+    } else if (modelLower.includes('imac') || modelLower.includes('desktop') || modelLower.includes('pc')) {
+      return <Monitor className="h-5 w-5 text-muted-foreground" />;
+    } else if (modelLower.includes('ipad') || modelLower.includes('tab')) {
+      return <Tablet className="h-5 w-5 text-muted-foreground" />;
+    } else {
+      return <Smartphone className="h-5 w-5 text-muted-foreground" />;
+    }
+  };
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -23,7 +37,7 @@ export function DeviceInfoCard({ device }: DeviceInfoCardProps) {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <Smartphone className="h-5 w-5 text-muted-foreground" />
+              {getDeviceIcon()}
               <span className="font-medium">Model</span>
             </div>
             <span>{device.model}</span>

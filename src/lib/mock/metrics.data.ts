@@ -27,3 +27,37 @@ export const metrics: MetricData[] = [
     changeType: "negative"
   }
 ];
+
+// Device metrics by type
+export const deviceTypeMetrics = [
+  {
+    type: "Smartphone",
+    count: 145,
+    compliance: 92,
+    recentIssues: 3
+  },
+  {
+    type: "Laptop",
+    count: 98,
+    compliance: 89,
+    recentIssues: 7
+  },
+  {
+    type: "Desktop PC",
+    count: 64,
+    compliance: 95,
+    recentIssues: 2
+  },
+  {
+    type: "Tablet",
+    count: 37,
+    compliance: 88,
+    recentIssues: 5
+  },
+  {
+    type: "IoT Devices",
+    count: 18,
+    compliance: 76,
+    recentIssues: 12
+  }
+];

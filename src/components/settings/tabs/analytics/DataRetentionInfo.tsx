@@ -10,6 +10,9 @@ export function DataRetentionInfo({ period }: DataRetentionInfoProps) {
       <p className="text-sm text-muted-foreground">
         Currently set to: {period}
       </p>
+      <p className="text-xs text-muted-foreground">
+        This applies to all device types: smartphones, tablets, laptops, desktop PCs, and IoT devices.
+      </p>
     </div>
   );
 }

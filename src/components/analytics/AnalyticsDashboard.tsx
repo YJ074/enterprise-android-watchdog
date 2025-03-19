@@ -1,5 +1,6 @@
 
 import { DetailedMetricsGrid } from "./DetailedMetricsGrid";
+import { DeviceTypeMetrics } from "./DeviceTypeMetrics";
 import { HistoricalTrendsChart } from "./HistoricalTrendsChart";
 import { ForecastInsights } from "./ForecastInsights";
 import { format } from "date-fns";
@@ -53,6 +54,9 @@ export function AnalyticsDashboard() {
       </div>
 
       <DetailedMetricsGrid />
+      
+      {/* New Device Type Metrics Section */}
+      <DeviceTypeMetrics />
       
       <div className="grid grid-cols-1 gap-6">
         <HistoricalTrendsChart />
