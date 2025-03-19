@@ -30,8 +30,8 @@ export function Dashboard() {
   // Add state for selected devices to pass to DeviceListTable
   const [selectedDevices, setSelectedDevices] = useState([]);
   
-  // Add state for active tab
-  const [activeTab, setActiveTab] = useState("overview");
+  // Set activeTab to "software" initially to make it visible first
+  const [activeTab, setActiveTab] = useState("software");
   
   // Dummy handlers for the device list table
   const handleSelectDevice = () => {
@@ -59,6 +59,12 @@ export function Dashboard() {
               Manage Devices
             </Link>
           </Button>
+          <Button asChild variant="outline">
+            <Link to="/software">
+              <PackageOpen className="h-4 w-4 mr-2" />
+              Software Management
+            </Link>
+          </Button>
           <AddDeviceDialog 
             trigger={
               <Button variant="outline">
@@ -75,17 +81,17 @@ export function Dashboard() {
         onValueChange={setActiveTab}
         className="space-y-4"
       >
-        <TabsList>
+        <TabsList className="grid grid-cols-4 md:grid-cols-4 gap-2">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="analytics">
             <BarChart3 className="h-4 w-4 mr-2" />
-            Advanced Analytics
+            Analytics
           </TabsTrigger>
           <TabsTrigger value="metrics">
             <BarChart3 className="h-4 w-4 mr-2" />
-            Device Metrics
+            Metrics
           </TabsTrigger>
-          <TabsTrigger value="software">
+          <TabsTrigger value="software" className="bg-primary text-primary-foreground">
             <PackageOpen className="h-4 w-4 mr-2" />
             Software
           </TabsTrigger>

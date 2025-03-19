@@ -5,7 +5,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { devices } from "@/lib/mock-data";
-import { Search } from "lucide-react";
+import { Search, PackageOpen } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export function SoftwareDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -39,9 +40,17 @@ export function SoftwareDashboard() {
     .slice(0, 10);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in-50 duration-500">
+      <Alert className="bg-blue-50 border-blue-200 mb-6">
+        <PackageOpen className="h-4 w-4" />
+        <AlertTitle>Software Inventory</AlertTitle>
+        <AlertDescription>
+          View and manage software installed across all devices in your organization.
+        </AlertDescription>
+      </Alert>
+      
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Software Inventory</h2>
+        <h2 className="text-xl font-semibold">Software Management</h2>
         <div className="relative w-64">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -54,11 +63,14 @@ export function SoftwareDashboard() {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Most Installed Applications</CardTitle>
+        <Card className="shadow-md border-2 border-blue-100">
+          <CardHeader className="bg-blue-50">
+            <CardTitle className="flex items-center">
+              <PackageOpen className="h-5 w-5 mr-2 text-blue-500" />
+              Most Installed Applications
+            </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             <div className="space-y-2">
               {topApps.map(([appName, count]) => (
                 <div key={appName} className="flex justify-between items-center border-b pb-2">
@@ -70,11 +82,14 @@ export function SoftwareDashboard() {
           </CardContent>
         </Card>
         
-        <Card>
-          <CardHeader>
-            <CardTitle>Software Statistics</CardTitle>
+        <Card className="shadow-md border-2 border-blue-100">
+          <CardHeader className="bg-blue-50">
+            <CardTitle className="flex items-center">
+              <PackageOpen className="h-5 w-5 mr-2 text-blue-500" />
+              Software Statistics
+            </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <span>Total Applications:</span>
@@ -101,15 +116,18 @@ export function SoftwareDashboard() {
         </Card>
       </div>
       
-      <Card>
-        <CardHeader>
-          <CardTitle>Application Inventory</CardTitle>
+      <Card className="shadow-md border-2 border-blue-100">
+        <CardHeader className="bg-blue-50">
+          <CardTitle className="flex items-center">
+            <PackageOpen className="h-5 w-5 mr-2 text-blue-500" />
+            Application Inventory
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="bg-muted/50">
                   <TableHead>Application Name</TableHead>
                   <TableHead>Version</TableHead>
                   <TableHead>Size</TableHead>
@@ -126,7 +144,7 @@ export function SoftwareDashboard() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredApplications.map((app) => (
+                  filteredApplications.slice(0, 8).map((app) => (
                     <TableRow key={`${app.id}-${app.deviceName}`}>
                       <TableCell className="font-medium">{app.name}</TableCell>
                       <TableCell>{app.version}</TableCell>

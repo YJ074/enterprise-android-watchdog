@@ -46,7 +46,16 @@ export function AppRoutes() {
       <Route path="/settings/*" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
       <Route path="/investigation" element={<ProtectedRoute><InvestigationPage /></ProtectedRoute>} />
       <Route path="/migrations" element={<ProtectedRoute><MigrationsPage /></ProtectedRoute>} />
-      <Route path="/software" element={<ProtectedRoute><SoftwarePage /></ProtectedRoute>} />
+      
+      {/* Software Route - Highlighted */}
+      <Route 
+        path="/software" 
+        element={
+          <ProtectedRoute>
+            <SoftwarePage />
+          </ProtectedRoute>
+        } 
+      />
       
       {/* 404 Route */}
       <Route path="*" element={<NotFound />} />
