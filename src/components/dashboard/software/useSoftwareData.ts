@@ -13,6 +13,7 @@ interface ApplicationWithDevice extends Application {
 export function useSoftwareData() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
   const { toast } = useToast();
   
   // Extract all applications from all devices
@@ -43,27 +44,41 @@ export function useSoftwareData() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10);
 
-  // Simulate data loading and show notification
+  // Initialize data with logging
   useEffect(() => {
-    console.log("Software data hook initialized");
+    console.log("Software data hook initializing...");
     
-    // Simulate a data loading delay
+    // Simulate a data loading delay - this helps ensure components mount properly
     const timer = setTimeout(() => {
       setIsLoading(false);
+      setInitialized(true);
       
-      console.log("Software data loaded:", {
+      console.log("Software data loaded successfully:", {
+        timestamp: new Date().toISOString(),
         totalApps: allApplications.length,
-        topApps: topApps.length
+        uniqueApps: Object.keys(appCounts).length,
+        topAppCount: topApps.length,
+        deviceCount: devices.length
       });
       
       toast({
         title: "Software Data Loaded",
         description: `Loaded ${allApplications.length} applications across ${devices.length} devices.`,
       });
-    }, 500);
+    }, 800); // Slightly longer delay to ensure UI is ready
     
     return () => clearTimeout(timer);
   }, [toast]);
+
+  // Log whenever filtered results change
+  useEffect(() => {
+    if (initialized) {
+      console.log("Search results updated:", {
+        searchTerm,
+        resultCount: filteredApplications.length
+      });
+    }
+  }, [searchTerm, filteredApplications.length, initialized]);
 
   return {
     searchTerm,

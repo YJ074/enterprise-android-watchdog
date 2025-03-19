@@ -1,4 +1,3 @@
-
 import { DashboardMetricCard } from "./DashboardMetricCard";
 import { DeviceStatusChart } from "./DeviceStatusChart";
 import { RecentActivityList } from "./RecentActivityList";
@@ -31,25 +30,33 @@ export function Dashboard() {
   // Add state for selected devices to pass to DeviceListTable
   const [selectedDevices, setSelectedDevices] = useState([]);
   
-  // Set activeTab to "software" initially to make it visible first
+  // Always default to software tab and ensure it's visible
   const [activeTab, setActiveTab] = useState("software");
   const { toast } = useToast();
   
   // Use effect to ensure the software tab is really active and visible
   useEffect(() => {
-    // Set software tab as active and show confirmation toast
+    // Set software tab as active 
+    console.log("Dashboard initialized, setting active tab to software");
     setActiveTab("software");
     
+    // Add a small delay to allow React to fully process state updates
     setTimeout(() => {
+      console.log("Confirming software tab is active:", activeTab === "software");
+      if (activeTab !== "software") {
+        setActiveTab("software");
+      }
+      
       toast({
-        title: "Software Dashboard Loaded",
-        description: "You're viewing the Software Management section. If content is missing, use the Refresh button.",
+        title: "Software Dashboard Ready",
+        description: "You're viewing the Software Management section.",
       });
-    }, 300);
+    }, 200);
   }, [toast]);
   
   // Simple refresh function
   const refreshView = () => {
+    console.log("Refreshing dashboard view");
     setActiveTab("none");
     setTimeout(() => {
       setActiveTab("software");
@@ -74,7 +81,11 @@ export function Dashboard() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={refreshView}>
+          <Button 
+            variant="outline" 
+            onClick={refreshView}
+            className="border-blue-200 hover:bg-blue-50"
+          >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh View
           </Button>
@@ -90,7 +101,7 @@ export function Dashboard() {
               Manage Devices
             </Link>
           </Button>
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" className="border-blue-200 bg-blue-50 text-blue-800 hover:bg-blue-100">
             <Link to="/software">
               <PackageOpen className="h-4 w-4 mr-2" />
               Software Management
@@ -111,6 +122,7 @@ export function Dashboard() {
         value={activeTab}
         onValueChange={setActiveTab}
         className="space-y-4"
+        defaultValue="software"
       >
         <TabsList className="grid grid-cols-4 md:grid-cols-4 gap-2">
           <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -122,7 +134,10 @@ export function Dashboard() {
             <BarChart3 className="h-4 w-4 mr-2" />
             Metrics
           </TabsTrigger>
-          <TabsTrigger value="software" className="bg-primary text-primary-foreground ring-2 ring-primary/20 animate-pulse">
+          <TabsTrigger 
+            value="software" 
+            className="bg-primary text-primary-foreground ring-2 ring-primary/20 font-semibold"
+          >
             <PackageOpen className="h-4 w-4 mr-2" />
             Software
           </TabsTrigger>
@@ -180,7 +195,7 @@ export function Dashboard() {
               Track installation counts, versions, and identify potential security risks.
             </p>
           </div>
-          <SoftwareDashboard />
+          <SoftwareDashboard key={`software-dashboard-${activeTab}`} />
         </TabsContent>
       </Tabs>
     </div>

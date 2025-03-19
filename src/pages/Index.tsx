@@ -1,4 +1,3 @@
-
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Dashboard } from "@/components/dashboard/Dashboard";
 import { format } from "date-fns";
@@ -11,28 +10,34 @@ const Index = () => {
   // Mock last update time - in a real app, this would come from your API or data service
   const lastUpdateTime = new Date();
   const { toast } = useToast();
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true); // Start with visible to avoid unnecessary re-renders
 
   // Ensure content is visible and active
   useEffect(() => {
+    console.log("Index page loaded, ensuring software dashboard is visible");
+    
     // Show a welcome toast
     toast({
       title: "Welcome to the Dashboard",
-      description: "The Software Management tab is now visible. If you don't see content, click Refresh View.",
+      description: "The Software Management tab is now active and visible.",
     });
     
-    // Force the software tab to be selected after the component mounts
+    // Force the software tab to be selected after a short delay
     setTimeout(() => {
+      console.log("Attempting to select software tab");
       const softwareTab = document.querySelector('[value="software"]');
       if (softwareTab instanceof HTMLElement) {
         softwareTab.click();
-        setIsVisible(true);
+        console.log("Software tab clicked");
+      } else {
+        console.log("Software tab element not found");
       }
-    }, 100);
+    }, 300);
   }, [toast]);
 
   const refreshView = () => {
     // This will force the Dashboard to re-render
+    console.log("Refreshing view");
     setIsVisible(false);
     setTimeout(() => {
       setIsVisible(true);
@@ -41,11 +46,14 @@ const Index = () => {
         description: "The dashboard has been refreshed with Software view.",
       });
       
-      // Make sure software tab is active
-      const softwareTab = document.querySelector('[value="software"]');
-      if (softwareTab instanceof HTMLElement) {
-        softwareTab.click();
-      }
+      // Make sure software tab is active with a slight delay
+      setTimeout(() => {
+        const softwareTab = document.querySelector('[value="software"]');
+        if (softwareTab instanceof HTMLElement) {
+          softwareTab.click();
+          console.log("Software tab activated after refresh");
+        }
+      }, 200);
     }, 100);
   };
 
@@ -70,23 +78,30 @@ const Index = () => {
             <BarChart3 className="h-4 w-4" />
             View Metrics
           </Button>
+          
           <Button 
             variant="outline" 
             size="sm" 
-            className="flex items-center gap-1"
+            className="flex items-center gap-1 border-blue-200 hover:bg-blue-50"
             onClick={refreshView}
           >
             <RefreshCw className="h-4 w-4" />
             Refresh View
           </Button>
+          
           <Button 
             variant="default" 
             size="sm" 
-            className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 animate-pulse"
+            className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700"
             onClick={() => {
+              console.log("Software button clicked, activating tab");
               const softwareTab = document.querySelector('[value="software"]');
               if (softwareTab instanceof HTMLElement) {
                 softwareTab.click();
+                toast({
+                  title: "Software Dashboard Activated",
+                  description: "Software management view is now active.",
+                });
               } else {
                 toast({
                   title: "Software tab not found",
@@ -101,7 +116,7 @@ const Index = () => {
           </Button>
         </div>
       </div>
-      <Dashboard key={isVisible ? "visible" : "hidden"} />
+      {isVisible && <Dashboard key={Date.now()} />}
     </MainLayout>
   );
 };

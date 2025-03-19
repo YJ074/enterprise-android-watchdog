@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SoftwareHeader } from './software/SoftwareHeader';
 import { TopApplicationsCard } from './software/TopApplicationsCard';
 import { SoftwareStatisticsCard } from './software/SoftwareStatisticsCard';
@@ -7,25 +7,32 @@ import { ApplicationInventoryTable } from './software/ApplicationInventoryTable'
 import { ComplianceAlert } from './software/ComplianceAlert';
 import { useSoftwareData } from './software/useSoftwareData';
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
 
 export function SoftwareDashboard() {
   const { toast } = useToast();
+  const [forceRender, setForceRender] = useState(0);
   const {
     searchTerm,
     setSearchTerm,
     allApplications,
     filteredApplications,
     appCounts,
-    topApps
+    topApps,
+    isLoading
   } = useSoftwareData();
 
-  // Add an effect to notify when the dashboard is rendered
+  // Force a re-render on mount
   useEffect(() => {
-    // Log when component mounts to help with debugging
-    console.log('SoftwareDashboard rendered with data:', {
+    // Log detailed information when component mounts
+    console.log('SoftwareDashboard mounting...', {
+      timestamp: new Date().toISOString(),
+      renderCount: forceRender,
       appCount: allApplications?.length, 
       filteredCount: filteredApplications?.length,
-      hasTopApps: topApps?.length > 0
+      hasTopApps: topApps?.length > 0,
+      isLoading
     });
     
     toast({
@@ -33,23 +40,61 @@ export function SoftwareDashboard() {
       description: "Software management interface is now visible.",
       variant: "default",
     });
-  }, [toast, allApplications, filteredApplications, topApps]);
+    
+    // This helps ensure React fully renders the component
+    const timer = setTimeout(() => {
+      setForceRender(prev => prev + 1);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [toast, allApplications, filteredApplications, topApps, isLoading, forceRender]);
 
-  // Ensure we have data before rendering
+  const handleRefresh = () => {
+    setForceRender(prev => prev + 1);
+    toast({
+      title: "Dashboard Refreshed",
+      description: "Software data has been refreshed.",
+    });
+  };
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="p-10 text-center bg-white rounded-lg shadow-md border border-blue-100">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-blue-100 rounded w-1/3 mx-auto"></div>
+          <div className="h-64 bg-blue-50 rounded"></div>
+          <p className="text-muted-foreground">Loading software data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show an error state if no applications are found
   if (!allApplications || allApplications.length === 0) {
     return (
-      <div className="p-6 text-center bg-white rounded-lg shadow">
-        <p className="text-muted-foreground">Loading software data...</p>
+      <div className="p-8 text-center bg-white rounded-lg shadow-md border border-red-100">
+        <p className="text-muted-foreground mb-4">No software data available</p>
+        <Button onClick={handleRefresh} variant="outline" size="sm" className="mx-auto">
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Refresh Dashboard
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in-50 duration-500 bg-white p-6 rounded-lg shadow-md border border-gray-100">
-      <SoftwareHeader 
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-      />
+    <div className="space-y-6 animate-in fade-in-50 duration-500 bg-white p-6 rounded-lg shadow-md border border-blue-100">
+      <div className="flex justify-between items-center">
+        <SoftwareHeader 
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
+        <Button onClick={handleRefresh} variant="outline" size="sm">
+          <RefreshCw className="mr-2 h-4 w-4" />
+          Refresh
+        </Button>
+      </div>
       
       <ComplianceAlert />
       
