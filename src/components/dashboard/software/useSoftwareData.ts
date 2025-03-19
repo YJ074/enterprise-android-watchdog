@@ -12,6 +12,7 @@ interface ApplicationWithDevice extends Application {
 
 export function useSoftwareData() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   
   // Extract all applications from all devices
@@ -42,12 +43,26 @@ export function useSoftwareData() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10);
 
-  // Effect to show a loading toast to guide user attention
+  // Simulate data loading and show notification
   useEffect(() => {
-    toast({
-      title: "Software Dashboard Loaded",
-      description: "Viewing software installed across all devices in your organization.",
-    });
+    console.log("Software data hook initialized");
+    
+    // Simulate a data loading delay
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      
+      console.log("Software data loaded:", {
+        totalApps: allApplications.length,
+        topApps: topApps.length
+      });
+      
+      toast({
+        title: "Software Data Loaded",
+        description: `Loaded ${allApplications.length} applications across ${devices.length} devices.`,
+      });
+    }, 500);
+    
+    return () => clearTimeout(timer);
   }, [toast]);
 
   return {
@@ -56,6 +71,7 @@ export function useSoftwareData() {
     allApplications,
     filteredApplications,
     appCounts,
-    topApps
+    topApps,
+    isLoading
   };
 }

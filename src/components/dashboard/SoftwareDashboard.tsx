@@ -22,16 +22,30 @@ export function SoftwareDashboard() {
   // Add an effect to notify when the dashboard is rendered
   useEffect(() => {
     // Log when component mounts to help with debugging
-    console.log('SoftwareDashboard rendered');
+    console.log('SoftwareDashboard rendered with data:', {
+      appCount: allApplications?.length, 
+      filteredCount: filteredApplications?.length,
+      hasTopApps: topApps?.length > 0
+    });
     
     toast({
       title: "Software Dashboard Active",
       description: "Software management interface is now visible.",
+      variant: "default",
     });
-  }, [toast]);
+  }, [toast, allApplications, filteredApplications, topApps]);
+
+  // Ensure we have data before rendering
+  if (!allApplications || allApplications.length === 0) {
+    return (
+      <div className="p-6 text-center bg-white rounded-lg shadow">
+        <p className="text-muted-foreground">Loading software data...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6 animate-in fade-in-50 duration-500 bg-white p-4 rounded-lg shadow">
+    <div className="space-y-6 animate-in fade-in-50 duration-500 bg-white p-6 rounded-lg shadow-md border border-gray-100">
       <SoftwareHeader 
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
