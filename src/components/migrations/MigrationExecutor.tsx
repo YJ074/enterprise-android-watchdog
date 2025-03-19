@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -13,8 +12,17 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Migration } from '@/lib/api/migration/migrationService';
 
-export const MigrationExecutor = () => {
+interface MigrationExecutorProps {
+  migrations: Migration[];
+  onExecuteMigration: (id: string) => Promise<boolean>;
+}
+
+export const MigrationExecutor: React.FC<MigrationExecutorProps> = ({ 
+  migrations,
+  onExecuteMigration
+}) => {
   const [selectedMigration, setSelectedMigration] = useState('');
   const [migrationMode, setMigrationMode] = useState('standard');
   const [migrationStatus, setMigrationStatus] = useState<'idle' | 'running' | 'completed' | 'error'>('idle');
@@ -24,7 +32,7 @@ export const MigrationExecutor = () => {
   const [backupBeforeMigration, setBackupBeforeMigration] = useState(true);
   const { toast } = useToast();
 
-  const handleExecute = () => {
+  const handleExecute = async () => {
     if (!selectedMigration) {
       toast({
         title: "Error",
@@ -34,26 +42,42 @@ export const MigrationExecutor = () => {
       return;
     }
 
-    // In a real app, this would be an API call to start the migration
+    // Set status to running and reset progress
     setMigrationStatus('running');
     setProgress(0);
 
-    // Simulate a migration running
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        const newProgress = prev + 10;
-        if (newProgress >= 100) {
-          clearInterval(interval);
-          setMigrationStatus('completed');
-          toast({
-            title: "Migration Completed",
-            description: "The migration has been successfully executed.",
-          });
-          return 100;
-        }
-        return newProgress;
+    try {
+      // Call the provided onExecuteMigration function
+      const success = await onExecuteMigration(selectedMigration);
+      
+      // Simulate progress updates
+      const interval = setInterval(() => {
+        setProgress((prev) => {
+          const newProgress = prev + 10;
+          if (newProgress >= 100) {
+            clearInterval(interval);
+            setMigrationStatus(success ? 'completed' : 'error');
+            
+            if (success) {
+              toast({
+                title: "Migration Completed",
+                description: "The migration has been successfully executed.",
+              });
+            }
+            
+            return 100;
+          }
+          return newProgress;
+        });
+      }, 500);
+    } catch (error) {
+      setMigrationStatus('error');
+      toast({
+        title: "Error",
+        description: "Failed to execute migration",
+        variant: "destructive",
       });
-    }, 500);
+    }
   };
 
   const handleImport = () => {
@@ -132,10 +156,9 @@ export const MigrationExecutor = () => {
                     <SelectValue placeholder="Select a migration" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="mig-002">User Profiles Migration</SelectItem>
-                    <SelectItem value="mig-005">Device Configuration Migration</SelectItem>
-                    <SelectItem value="mig-006">Security Policies Migration</SelectItem>
-                    <SelectItem value="mig-007">Application Settings Migration</SelectItem>
+                    {migrations.filter(m => m.status === 'pending').map(migration => (
+                      <SelectItem key={migration.id} value={migration.id}>{migration.name}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

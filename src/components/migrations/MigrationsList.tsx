@@ -35,124 +35,23 @@ import {
 import { MigrationDetail } from './MigrationDetail';
 import { useToast } from '@/components/ui/use-toast';
 import { Migration } from '@/lib/api/migration/migrationService';
-import { useMigrations } from '@/hooks/useMigrations';
 import { useNavigate } from 'react-router-dom';
 
-// Sample migration data - in a real app this would come from an API/service
-const sampleMigrations = [
-  { 
-    id: 'mig-001',
-    name: 'Device Data Migration v1',
-    status: 'completed',
-    type: 'device',
-    createdAt: new Date(2023, 4, 15).toISOString(),
-    completedAt: new Date(2023, 4, 16).toISOString(),
-    recordCount: 352,
-    source: 'production',
-    destination: 'backup',
-    includeAttachments: true,
-    includeHistoricalData: false,
-    createdBy: 'admin@example.com',
-    logs: [
-      {
-        id: 'log-001',
-        migrationId: 'mig-001',
-        timestamp: new Date(2023, 4, 15, 14, 30).toISOString(),
-        level: 'info',
-        message: 'Migration started',
-      },
-      {
-        id: 'log-002',
-        migrationId: 'mig-001',
-        timestamp: new Date(2023, 4, 15, 14, 45).toISOString(),
-        level: 'info',
-        message: 'Processed 200 records',
-      },
-      {
-        id: 'log-003',
-        migrationId: 'mig-001',
-        timestamp: new Date(2023, 4, 16, 8, 15).toISOString(),
-        level: 'info',
-        message: 'Migration completed successfully',
-      }
-    ]
-  },
-  { 
-    id: 'mig-002',
-    name: 'User Profiles Migration',
-    status: 'pending',
-    type: 'user',
-    createdAt: new Date(2023, 5, 10).toISOString(),
-    completedAt: null,
-    recordCount: 128,
-    source: 'staging',
-    destination: 'production',
-    includeAttachments: true,
-    includeHistoricalData: true,
-    createdBy: 'admin@example.com',
-    logs: []
-  },
-  { 
-    id: 'mig-003',
-    name: 'MDM Settings Migration',
-    status: 'in-progress',
-    type: 'settings',
-    createdAt: new Date().toISOString(),
-    startedAt: new Date().toISOString(),
-    completedAt: null,
-    recordCount: 45,
-    source: 'development',
-    destination: 'staging',
-    includeAttachments: false,
-    includeHistoricalData: false,
-    createdBy: 'admin@example.com',
-    logs: [
-      {
-        id: 'log-004',
-        migrationId: 'mig-003',
-        timestamp: new Date().toISOString(),
-        level: 'info',
-        message: 'Migration started',
-      }
-    ]
-  },
-  { 
-    id: 'mig-004',
-    name: 'Policy Migration v2',
-    status: 'failed',
-    type: 'policy',
-    createdAt: new Date(2023, 6, 1).toISOString(),
-    startedAt: new Date(2023, 6, 1).toISOString(),
-    completedAt: new Date(2023, 6, 1).toISOString(),
-    recordCount: 17,
-    source: 'production',
-    destination: 'staging',
-    includeAttachments: false,
-    includeHistoricalData: true,
-    createdBy: 'admin@example.com',
-    logs: [
-      {
-        id: 'log-005',
-        migrationId: 'mig-004',
-        timestamp: new Date(2023, 6, 1).toISOString(),
-        level: 'info',
-        message: 'Migration started',
-      },
-      {
-        id: 'log-006',
-        migrationId: 'mig-004',
-        timestamp: new Date(2023, 6, 1).toISOString(),
-        level: 'error',
-        message: 'Error: Connection timeout when migrating policies',
-      }
-    ]
-  },
-];
+interface MigrationsListProps {
+  migrations: Migration[];
+  isLoading: boolean;
+  onRefresh: () => void;
+  onExecuteMigration: (id: string) => Promise<boolean>;
+  onDeleteMigration: (id: string) => Promise<boolean>;
+}
 
-export const MigrationsList = () => {
-  // In a real application, we would use the useMigrations hook
-  // const { migrations, isLoading, error, executeMigration, deleteMigration } = useMigrations();
-  const [migrations, setMigrations] = useState<Migration[]>(sampleMigrations as unknown as Migration[]);
+export const MigrationsList: React.FC<MigrationsListProps> = ({
+  migrations,
+  isLoading,
+  onRefresh,
+  onExecuteMigration,
+  onDeleteMigration
+}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
@@ -168,26 +67,38 @@ export const MigrationsList = () => {
     navigate('/devices');
   };
   
-  const handleExecuteMigration = (id: string) => {
+  const handleExecuteMigration = async (id: string) => {
     toast({
       title: "Migration Started",
       description: "The migration process has been initiated.",
     });
     
-    // Update status in the UI
-    setMigrations(prev => 
-      prev.map(m => m.id === id ? {...m, status: 'in-progress'} : m)
-    );
+    const success = await onExecuteMigration(id);
+    
+    if (!success) {
+      toast({
+        title: "Migration Failed",
+        description: "There was an error executing the migration.",
+        variant: "destructive",
+      });
+    }
   };
   
-  const handleDeleteMigration = (id: string) => {
-    toast({
-      title: "Migration Deleted",
-      description: "The migration has been removed from the system.",
-    });
+  const handleDeleteMigration = async (id: string) => {
+    const success = await onDeleteMigration(id);
     
-    // Remove from the list
-    setMigrations(prev => prev.filter(m => m.id !== id));
+    if (success) {
+      toast({
+        title: "Migration Deleted",
+        description: "The migration has been removed from the system.",
+      });
+    } else {
+      toast({
+        title: "Deletion Failed",
+        description: "There was an error deleting the migration.",
+        variant: "destructive",
+      });
+    }
   };
   
   const handleExportMigration = (id: string) => {
@@ -195,6 +106,27 @@ export const MigrationsList = () => {
       title: "Export Started",
       description: "The migration details are being exported.",
     });
+    
+    // Simulate export process
+    setTimeout(() => {
+      const migration = migrations.find(m => m.id === id);
+      if (migration) {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(
+          JSON.stringify(migration, null, 2)
+        );
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", `migration-${id}-export.json`);
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+        
+        toast({
+          title: "Export Complete",
+          description: "Migration data has been exported successfully.",
+        });
+      }
+    }, 1000);
   };
   
   const handleBackToList = () => {
@@ -202,11 +134,11 @@ export const MigrationsList = () => {
   };
   
   const handleRefresh = () => {
+    onRefresh();
     toast({
       title: "Refreshing",
       description: "Refreshing migration status...",
     });
-    // In a real app, this would refetch migrations
   };
   
   const handleClearFilters = () => {
