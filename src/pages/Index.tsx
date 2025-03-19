@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import { BarChart3, PackageOpen } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   // Mock last update time - in a real app, this would come from your API or data service
   const lastUpdateTime = new Date();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Show a toast when the page loads to guide the user
   useEffect(() => {
@@ -18,7 +20,7 @@ const Index = () => {
       title: "Welcome to the Dashboard",
       description: "The Software Management tab is now visible by default. Explore other tabs using the navigation above.",
     });
-  }, []);
+  }, [toast]);
 
   return (
     <MainLayout>

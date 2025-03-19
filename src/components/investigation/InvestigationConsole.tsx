@@ -1,11 +1,13 @@
 
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useDevice } from "@/hooks/useDevices";
 import { LogsTable } from "./LogsTable";
 import { DeviceInfoBanner } from "./DeviceInfoBanner";
 import { InvestigationSearchForm } from "./form-fields/InvestigationSearchForm";
 import { useInvestigationConsole } from "./hooks/useInvestigationConsole";
 import { InvestigationResults } from "./InvestigationResults";
+import { Button } from "@/components/ui/button";
+import { Home, PackageOpen } from "lucide-react";
 
 export function InvestigationConsole() {
   const { id: deviceId } = useParams<{ id: string }>();
@@ -27,6 +29,24 @@ export function InvestigationConsole() {
   
   return (
     <div className="space-y-4">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Investigation Console</h1>
+        <div className="flex gap-2">
+          <Button asChild variant="outline">
+            <Link to="/">
+              <Home className="h-4 w-4 mr-2" />
+              Dashboard
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link to="/">
+              <PackageOpen className="h-4 w-4 mr-2" />
+              Software Dashboard
+            </Link>
+          </Button>
+        </div>
+      </div>
+    
       <InvestigationSearchForm
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
@@ -41,9 +61,9 @@ export function InvestigationConsole() {
         deviceId={deviceId}
       />
       
-      <DeviceInfoBanner device={device} />
+      {device && <DeviceInfoBanner device={device} />}
       
-      <InvestigationResults logs={logs} isLoading={isSearching} />
+      <InvestigationResults logs={logs} isLoading={isSearching} deviceId={deviceId} />
     </div>
   );
 }
