@@ -1,41 +1,24 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { FileDown, FileUp, History, RefreshCw } from "lucide-react";
+import { FileDown, FileUp, History, RefreshCw, Loader2 } from "lucide-react";
 import { InfoBanner } from "../../common/InfoBanner";
-import { useToast } from "@/components/ui/use-toast";
 
-export const MigrationActionBar = () => {
-  const { toast } = useToast();
-  
-  const handleExportAll = () => {
-    toast({
-      title: "Export Started",
-      description: "Exporting all migrations as a backup archive.",
-    });
-  };
+interface MigrationActionBarProps {
+  onExportAll: () => void;
+  onImport: () => void;
+  onRefresh: () => void;
+  onViewHistory: () => void;
+  isRefreshing?: boolean;
+}
 
-  const handleImportAll = () => {
-    toast({
-      title: "Import",
-      description: "Please select a migration archive to import.",
-    });
-  };
-
-  const handleRefresh = () => {
-    toast({
-      title: "Refreshing",
-      description: "Refreshing migration status from all systems.",
-    });
-  };
-
-  const handleViewHistory = () => {
-    toast({
-      title: "Migration History",
-      description: "Viewing detailed migration history and audit logs.",
-    });
-  };
-  
+export const MigrationActionBar: React.FC<MigrationActionBarProps> = ({
+  onExportAll,
+  onImport,
+  onRefresh,
+  onViewHistory,
+  isRefreshing = false
+}) => {
   return (
     <div className="flex flex-col md:flex-row gap-4 justify-between">
       <InfoBanner
@@ -44,19 +27,33 @@ export const MigrationActionBar = () => {
       />
       
       <div className="flex flex-wrap gap-2">
-        <Button variant="outline" size="sm" onClick={handleExportAll}>
+        <Button variant="outline" size="sm" onClick={onExportAll}>
           <FileDown className="h-4 w-4 mr-2" />
           Export All
         </Button>
-        <Button variant="outline" size="sm" onClick={handleImportAll}>
+        <Button variant="outline" size="sm" onClick={onImport}>
           <FileUp className="h-4 w-4 mr-2" />
           Import
         </Button>
-        <Button variant="outline" size="sm" onClick={handleRefresh}>
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Refresh
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={onRefresh}
+          disabled={isRefreshing}
+        >
+          {isRefreshing ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Refreshing...
+            </>
+          ) : (
+            <>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </>
+          )}
         </Button>
-        <Button variant="outline" size="sm" onClick={handleViewHistory}>
+        <Button variant="outline" size="sm" onClick={onViewHistory}>
           <History className="h-4 w-4 mr-2" />
           History
         </Button>

@@ -1,106 +1,60 @@
 
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { Server, Database, Users, Settings, AlertTriangle, CheckCircle, Clock } from "lucide-react";
+import { Migration } from '@/lib/api/migration/migrationService';
+import { Loader2 } from 'lucide-react';
 
-export const MigrationStats = () => {
-  // In a real application, these would be fetched from an API
-  const stats = {
-    totalMigrations: 24,
-    pendingMigrations: 3,
-    completedMigrations: 18,
-    failedMigrations: 3,
-    deviceMigrations: 8,
-    userMigrations: 7,
-    policyMigrations: 5,
-    settingsMigrations: 4,
-  };
+interface MigrationStatsProps {
+  migrations: Migration[];
+  isLoading: boolean;
+}
 
+export const MigrationStats: React.FC<MigrationStatsProps> = ({ migrations, isLoading }) => {
+  // Calculate stats
+  const pendingCount = migrations.filter(m => m.status === 'pending').length;
+  const inProgressCount = migrations.filter(m => m.status === 'in-progress').length;
+  const completedCount = migrations.filter(m => m.status === 'completed').length;
+  const failedCount = migrations.filter(m => m.status === 'failed').length;
+  const totalCount = migrations.length;
+  
+  // Calculate success rate
+  const successRate = totalCount > 0 
+    ? Math.round((completedCount / totalCount) * 100) 
+    : 0;
+  
+  const statItems = [
+    { label: 'Total Migrations', value: totalCount.toString(), color: 'bg-gray-100 dark:bg-gray-800' },
+    { label: 'Pending', value: pendingCount.toString(), color: 'bg-yellow-100 dark:bg-yellow-900' },
+    { label: 'In Progress', value: inProgressCount.toString(), color: 'bg-blue-100 dark:bg-blue-900' },
+    { label: 'Completed', value: completedCount.toString(), color: 'bg-green-100 dark:bg-green-900' },
+    { label: 'Failed', value: failedCount.toString(), color: 'bg-red-100 dark:bg-red-900' },
+    { label: 'Success Rate', value: `${successRate}%`, color: 'bg-purple-100 dark:bg-purple-900' },
+  ];
+  
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="py-6 flex justify-center items-center">
+          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+          <span className="ml-2">Loading statistics...</span>
+        </CardContent>
+      </Card>
+    );
+  }
+  
   return (
     <Card>
-      <CardContent className="p-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="flex items-center gap-2">
-            <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-md">
-              <Clock className="h-5 w-5 text-blue-600 dark:text-blue-300" />
+      <CardContent className="py-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {statItems.map((item, index) => (
+            <div 
+              key={index} 
+              className={`${item.color} rounded-lg p-4 text-center transition-all hover:shadow-md`}
+            >
+              <p className="text-2xl font-bold">{item.value}</p>
+              <p className="text-sm text-muted-foreground">{item.label}</p>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Pending</p>
-              <p className="text-2xl font-bold">{stats.pendingMigrations}</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <div className="bg-green-100 dark:bg-green-900 p-2 rounded-md">
-              <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-300" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Completed</p>
-              <p className="text-2xl font-bold">{stats.completedMigrations}</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <div className="bg-red-100 dark:bg-red-900 p-2 rounded-md">
-              <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-300" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Failed</p>
-              <p className="text-2xl font-bold">{stats.failedMigrations}</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <div className="bg-purple-100 dark:bg-purple-900 p-2 rounded-md">
-              <Database className="h-5 w-5 text-purple-600 dark:text-purple-300" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Total</p>
-              <p className="text-2xl font-bold">{stats.totalMigrations}</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-          <div className="flex items-center gap-2">
-            <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded-md">
-              <Server className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Device</p>
-              <p className="text-xl font-semibold">{stats.deviceMigrations}</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded-md">
-              <Users className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">User</p>
-              <p className="text-xl font-semibold">{stats.userMigrations}</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded-md">
-              <Database className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Policy</p>
-              <p className="text-xl font-semibold">{stats.policyMigrations}</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <div className="bg-gray-100 dark:bg-gray-800 p-2 rounded-md">
-              <Settings className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Settings</p>
-              <p className="text-xl font-semibold">{stats.settingsMigrations}</p>
-            </div>
-          </div>
+          ))}
         </div>
       </CardContent>
     </Card>

@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Loader2 } from 'lucide-react';
+import { useMigrations } from '@/hooks/useMigrations';
 
 export const MigrationCreator = () => {
   const [migrationName, setMigrationName] = useState('');
@@ -19,9 +21,11 @@ export const MigrationCreator = () => {
   const [source, setSource] = useState('');
   const [destination, setDestination] = useState('');
   const [migrationMethod, setMigrationMethod] = useState('standard');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { createMigration } = useMigrations();
 
-  const handleCreateMigration = () => {
+  const handleCreateMigration = async () => {
     if (!migrationName || !migrationType || !source || !destination) {
       toast({
         title: "Required Fields Missing",
@@ -31,13 +35,54 @@ export const MigrationCreator = () => {
       return;
     }
 
-    // In a real application, this would call an API to create the migration
-    toast({
-      title: "Migration Created",
-      description: `${migrationName} has been created successfully.`,
-    });
+    setIsSubmitting(true);
 
-    // Reset form
+    try {
+      // Create a migration object from form data
+      const newMigration = {
+        name: migrationName,
+        type: migrationType as any,
+        description,
+        source,
+        destination,
+        includeAttachments,
+        includeHistoricalData,
+        recordCount: Math.floor(Math.random() * 200) + 10, // Random count for demo
+        createdBy: "current.user@example.com",
+      };
+
+      // In a real app, this would use the createMigration from useMigrations hook
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
+      
+      await createMigration(newMigration);
+      
+      toast({
+        title: "Migration Created",
+        description: `${migrationName} has been created successfully.`,
+      });
+
+      // Reset form
+      setMigrationName('');
+      setMigrationType('');
+      setDescription('');
+      setIncludeAttachments(false);
+      setIncludeHistoricalData(false);
+      setSource('');
+      setDestination('');
+      setMigrationMethod('standard');
+    } catch (error) {
+      toast({
+        title: "Error Creating Migration",
+        description: "An error occurred while creating the migration.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleReset = () => {
+    // Reset form fields
     setMigrationName('');
     setMigrationType('');
     setDescription('');
@@ -46,6 +91,11 @@ export const MigrationCreator = () => {
     setSource('');
     setDestination('');
     setMigrationMethod('standard');
+    
+    toast({
+      title: "Form Reset",
+      description: "The migration form has been reset.",
+    });
   };
 
   return (
@@ -174,9 +224,23 @@ export const MigrationCreator = () => {
           </TabsContent>
         </Tabs>
 
-        <div className="flex justify-end mt-6">
-          <Button variant="outline" className="mr-2">Cancel</Button>
-          <Button onClick={handleCreateMigration}>Create Migration</Button>
+        <div className="flex justify-end mt-6 gap-2">
+          <Button variant="outline" onClick={handleReset} disabled={isSubmitting}>
+            Reset
+          </Button>
+          <Button 
+            onClick={handleCreateMigration} 
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Creating...
+              </>
+            ) : (
+              'Create Migration'
+            )}
+          </Button>
         </div>
       </CardContent>
     </Card>
