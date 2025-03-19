@@ -60,7 +60,7 @@ export function ChartConfig({
           <SelectContent>
             {forecastRanges.map((range) => (
               <SelectItem key={range.value} value={range.value.toString()}>
-                {range.label}
+                {range.label} Forecast
               </SelectItem>
             ))}
           </SelectContent>
