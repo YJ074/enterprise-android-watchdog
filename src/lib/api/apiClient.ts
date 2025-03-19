@@ -1,17 +1,16 @@
 
 import { toast } from "@/components/ui/use-toast";
+import { API_CONFIG, getApiUrl } from "./config";
 
 interface ApiRequestOptions extends RequestInit {
-  params?: Record<string, string>;
+  params?: Record<string, string | number | boolean | undefined>;
 }
 
-interface ApiResponse<T> {
+export interface ApiResponse<T> {
   data: T | null;
   error: string | null;
   status: number;
 }
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 /**
  * API client for making standardized requests to backend services
@@ -86,14 +85,14 @@ async function makeRequest<T>(
 ): Promise<ApiResponse<T>> {
   try {
     const { params, ...fetchOptions } = options;
-    let url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    let url = getApiUrl(endpoint);
     
     // Add query parameters if provided
     if (params) {
       const queryParams = new URLSearchParams();
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
-          queryParams.append(key, value);
+          queryParams.append(key, String(value));
         }
       });
       const queryString = queryParams.toString();
@@ -102,17 +101,31 @@ async function makeRequest<T>(
       }
     }
 
-    // Add default headers
+    // Add default headers from config
     const headers = new Headers(fetchOptions.headers);
     if (!headers.has('Accept')) {
       headers.set('Accept', 'application/json');
     }
+    
+    // Add custom headers from config
+    Object.entries(API_CONFIG.HEADERS).forEach(([key, value]) => {
+      if (!headers.has(key)) {
+        headers.set(key, value);
+      }
+    });
 
-    // Execute the request
+    // Execute the request with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT);
+    
     const response = await fetch(url, {
       ...fetchOptions,
       headers,
+      credentials: API_CONFIG.INCLUDE_CREDENTIALS ? 'include' : 'same-origin',
+      signal: controller.signal,
     });
+    
+    clearTimeout(timeoutId);
 
     let data = null;
     let error = null;
@@ -139,6 +152,14 @@ async function makeRequest<T>(
 
     return { data, error, status: response.status };
   } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      return { 
+        data: null, 
+        error: 'Request timed out', 
+        status: 0 
+      };
+    }
+    
     console.error('API request error:', error);
     return { 
       data: null, 

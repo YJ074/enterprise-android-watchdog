@@ -1,18 +1,20 @@
-import { apiClient } from '../apiClient';
+
+import { BaseApiService } from '../BaseApiService';
 import { Device } from '../../types/device.types';
 import { isMockEnvironment } from '../../supabase';
 import { devices } from '../../mock/devices.data';
+import { ApiResponse } from '../apiClient';
 
-/**
- * Device API service for handling device-related operations
- */
-export const deviceService = {
+class DeviceService extends BaseApiService<Device> {
+  constructor() {
+    super('/devices');
+  }
+
   /**
-   * Get all devices
+   * Override getAll to support mock data in development
    */
-  async getAllDevices() {
+  async getAllDevices(): Promise<ApiResponse<Device[]>> {
     if (isMockEnvironment) {
-      // Use mock data in development
       return {
         data: devices,
         error: null,
@@ -20,15 +22,14 @@ export const deviceService = {
       };
     }
     
-    return apiClient.get<Device[]>('/devices');
-  },
+    return super.getAll();
+  }
   
   /**
-   * Get a single device by ID
+   * Override getById to support mock data in development
    */
-  async getDeviceById(id: string) {
+  async getDeviceById(id: string): Promise<ApiResponse<Device | null>> {
     if (isMockEnvironment) {
-      // Use mock data in development
       const device = devices.find(d => d.id === id) || null;
       return {
         data: device,
@@ -37,36 +38,35 @@ export const deviceService = {
       };
     }
     
-    return apiClient.get<Device>(`/devices/${id}`);
-  },
+    return super.getById(id);
+  }
   
   /**
-   * Create a new device
+   * Create a new device - uses base implementation
    */
-  async createDevice(deviceData: Omit<Device, 'id'>) {
-    return apiClient.post<Device>('/devices', deviceData);
-  },
+  async createDevice(deviceData: Omit<Device, 'id'>): Promise<ApiResponse<Device>> {
+    return super.create(deviceData);
+  }
   
   /**
-   * Update an existing device
+   * Update an existing device - uses base implementation
    */
-  async updateDevice(id: string, deviceData: Partial<Device>) {
-    return apiClient.put<Device>(`/devices/${id}`, deviceData);
-  },
+  async updateDevice(id: string, deviceData: Partial<Device>): Promise<ApiResponse<Device>> {
+    return super.update(id, deviceData);
+  }
   
   /**
-   * Delete a device
+   * Delete a device - uses base implementation
    */
-  async deleteDevice(id: string) {
-    return apiClient.delete(`/devices/${id}`);
-  },
+  async deleteDevice(id: string): Promise<ApiResponse<void>> {
+    return super.delete(id);
+  }
   
   /**
    * Get devices filtered by department
    */
-  async getDevicesByDepartment(department: string) {
+  async getDevicesByDepartment(department: string): Promise<ApiResponse<Device[]>> {
     if (isMockEnvironment) {
-      // Use mock data in development
       const filteredDevices = devices.filter(d => 
         d.department.toLowerCase() === department.toLowerCase()
       );
@@ -77,17 +77,14 @@ export const deviceService = {
       };
     }
     
-    return apiClient.get<Device[]>('/devices', { 
-      params: { department } 
-    });
-  },
+    return super.getAll({ department });
+  }
   
   /**
    * Get devices with a specific status
    */
-  async getDevicesByStatus(status: 'online' | 'offline' | 'warning' | 'compromised') {
+  async getDevicesByStatus(status: 'online' | 'offline' | 'warning' | 'compromised'): Promise<ApiResponse<Device[]>> {
     if (isMockEnvironment) {
-      // Use mock data in development
       const filteredDevices = devices.filter(d => d.status === status);
       return {
         data: filteredDevices,
@@ -96,17 +93,14 @@ export const deviceService = {
       };
     }
     
-    return apiClient.get<Device[]>('/devices', { 
-      params: { status } 
-    });
-  },
+    return super.getAll({ status });
+  }
   
   /**
    * Get only PC and laptop devices
    */
-  async getPCAndLaptopDevices() {
+  async getPCAndLaptopDevices(): Promise<ApiResponse<Device[]>> {
     if (isMockEnvironment) {
-      // Use mock data in development
       const pcAndLaptopDevices = devices.filter(d => 
         d.model.toLowerCase().includes('laptop') || 
         d.model.toLowerCase().includes('desktop') ||
@@ -120,15 +114,13 @@ export const deviceService = {
       };
     }
     
-    return apiClient.get<Device[]>('/devices/computers', { 
-      params: { types: 'laptop,desktop' } 
-    });
-  },
+    return super.query<Device[]>('/computers', 'GET', undefined, { types: 'laptop,desktop' });
+  }
   
   /**
    * Get device metrics by type (PC, laptop, mobile, etc.)
    */
-  async getDeviceMetricsByType() {
+  async getDeviceMetricsByType(): Promise<ApiResponse<any>> {
     if (isMockEnvironment) {
       // Return mock metrics data
       const { deviceTypeMetrics } = await import('../../mock/metrics.data');
@@ -140,6 +132,9 @@ export const deviceService = {
       };
     }
     
-    return apiClient.get('/metrics/device-types');
+    return super.query('/metrics/device-types', 'GET');
   }
-};
+}
+
+// Export a singleton instance
+export const deviceService = new DeviceService();
