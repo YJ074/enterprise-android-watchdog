@@ -1,3 +1,4 @@
+
 import { DashboardMetricCard } from "./DashboardMetricCard";
 import { DeviceStatusChart } from "./DeviceStatusChart";
 import { RecentActivityList } from "./RecentActivityList";
@@ -36,22 +37,20 @@ export function Dashboard() {
   
   // Use effect to ensure the software tab is really active and visible
   useEffect(() => {
-    // Set software tab as active 
     console.log("Dashboard initialized, setting active tab to software");
-    setActiveTab("software");
     
-    // Add a small delay to allow React to fully process state updates
-    setTimeout(() => {
-      console.log("Confirming software tab is active:", activeTab === "software");
-      if (activeTab !== "software") {
-        setActiveTab("software");
-      }
+    // Set a small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      setActiveTab("software");
+      console.log("Software tab activated programmatically");
       
       toast({
         title: "Software Dashboard Ready",
         description: "You're viewing the Software Management section.",
       });
-    }, 200);
+    }, 300);
+    
+    return () => clearTimeout(timer);
   }, [toast]);
   
   // Simple refresh function
@@ -75,6 +74,9 @@ export function Dashboard() {
   const handleSelectAll = () => {
     // This is a placeholder since we don't need bulk selection in the dashboard
   };
+
+  // Make sure the software content has a unique key to force re-rendering
+  const softwareContentKey = `software-${Date.now()}`;
 
   return (
     <div className="space-y-6">
@@ -120,7 +122,10 @@ export function Dashboard() {
 
       <Tabs 
         value={activeTab}
-        onValueChange={setActiveTab}
+        onValueChange={(value) => {
+          console.log("Tab changed to:", value);
+          setActiveTab(value);
+        }}
         className="space-y-4"
         defaultValue="software"
       >
@@ -185,7 +190,7 @@ export function Dashboard() {
         </TabsContent>
 
         <TabsContent value="software" className="space-y-6">
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-md mb-4 shadow-sm">
+          <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-md mb-4 shadow-sm">
             <h3 className="text-lg font-medium text-blue-800 flex items-center">
               <PackageOpen className="h-5 w-5 mr-2 text-blue-600" />
               Software Management Dashboard
@@ -195,7 +200,7 @@ export function Dashboard() {
               Track installation counts, versions, and identify potential security risks.
             </p>
           </div>
-          <SoftwareDashboard key={`software-dashboard-${activeTab}`} />
+          <SoftwareDashboard key={softwareContentKey} />
         </TabsContent>
       </Tabs>
     </div>

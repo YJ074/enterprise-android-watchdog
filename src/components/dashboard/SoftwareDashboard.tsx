@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { SoftwareHeader } from './software/SoftwareHeader';
 import { TopApplicationsCard } from './software/TopApplicationsCard';
 import { SoftwareStatisticsCard } from './software/SoftwareStatisticsCard';
@@ -8,11 +8,11 @@ import { ComplianceAlert } from './software/ComplianceAlert';
 import { useSoftwareData } from './software/useSoftwareData';
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function SoftwareDashboard() {
   const { toast } = useToast();
-  const [forceRender, setForceRender] = useState(0);
   const {
     searchTerm,
     setSearchTerm,
@@ -23,12 +23,10 @@ export function SoftwareDashboard() {
     isLoading
   } = useSoftwareData();
 
-  // Force a re-render on mount
+  // Log detailed information when component mounts
   useEffect(() => {
-    // Log detailed information when component mounts
     console.log('SoftwareDashboard mounting...', {
       timestamp: new Date().toISOString(),
-      renderCount: forceRender,
       appCount: allApplications?.length, 
       filteredCount: filteredApplications?.length,
       hasTopApps: topApps?.length > 0,
@@ -40,17 +38,10 @@ export function SoftwareDashboard() {
       description: "Software management interface is now visible.",
       variant: "default",
     });
-    
-    // This helps ensure React fully renders the component
-    const timer = setTimeout(() => {
-      setForceRender(prev => prev + 1);
-    }, 100);
-    
-    return () => clearTimeout(timer);
-  }, [toast, allApplications, filteredApplications, topApps, isLoading, forceRender]);
+  }, [toast, allApplications, filteredApplications, topApps, isLoading]);
 
   const handleRefresh = () => {
-    setForceRender(prev => prev + 1);
+    window.location.reload();
     toast({
       title: "Dashboard Refreshed",
       description: "Software data has been refreshed.",
@@ -60,17 +51,32 @@ export function SoftwareDashboard() {
   // Show loading state
   if (isLoading) {
     return (
-      <div className="p-10 text-center bg-white rounded-lg shadow-md border border-blue-100">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-blue-100 rounded w-1/3 mx-auto"></div>
-          <div className="h-64 bg-blue-50 rounded"></div>
-          <p className="text-muted-foreground">Loading software data...</p>
+      <div className="p-8 space-y-6 bg-white rounded-lg shadow-md border border-blue-100">
+        <div className="flex items-center justify-between">
+          <div className="w-64">
+            <Skeleton className="h-8 w-full" />
+          </div>
+          <Skeleton className="h-9 w-24" />
+        </div>
+        
+        <Skeleton className="h-16 w-full" />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Skeleton className="h-64 w-full" />
+          <Skeleton className="h-64 w-full" />
+        </div>
+        
+        <Skeleton className="h-72 w-full" />
+        
+        <div className="flex items-center justify-center py-4">
+          <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
+          <span className="ml-2 text-blue-500 font-medium">Loading software data...</span>
         </div>
       </div>
     );
   }
 
-  // Show an error state if no applications are found
+  // Handle error state
   if (!allApplications || allApplications.length === 0) {
     return (
       <div className="p-8 text-center bg-white rounded-lg shadow-md border border-red-100">
@@ -84,7 +90,7 @@ export function SoftwareDashboard() {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in-50 duration-500 bg-white p-6 rounded-lg shadow-md border border-blue-100">
+    <div id="software-dashboard" className="space-y-6 animate-in fade-in-50 duration-300 bg-white p-6 rounded-lg shadow-md border-2 border-blue-200">
       <div className="flex justify-between items-center">
         <SoftwareHeader 
           searchTerm={searchTerm}

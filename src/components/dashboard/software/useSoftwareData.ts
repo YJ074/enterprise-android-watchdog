@@ -14,17 +14,41 @@ export function useSoftwareData() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
+  const [applications, setApplications] = useState<ApplicationWithDevice[]>([]);
   const { toast } = useToast();
   
-  // Extract all applications from all devices
-  const allApplications = devices.flatMap(device => 
-    device.applications.map(app => ({
-      ...app,
-      deviceName: device.name,
-      deviceModel: device.model,
-      deviceOS: device.osVersion
-    }))
-  );
+  // Initialize data
+  useEffect(() => {
+    console.log("Software data hook initializing...");
+    
+    // Extract all applications from all devices
+    const allApps = devices.flatMap(device => 
+      device.applications.map(app => ({
+        ...app,
+        deviceName: device.name,
+        deviceModel: device.model,
+        deviceOS: device.osVersion
+      }))
+    );
+    
+    // Set applications with slight delay to ensure rendering
+    const timer = setTimeout(() => {
+      console.log("Setting applications data:", allApps.length);
+      setApplications(allApps);
+      setIsLoading(false);
+      setInitialized(true);
+      
+      toast({
+        title: "Software Data Loaded",
+        description: `Loaded ${allApps.length} applications across ${devices.length} devices.`,
+      });
+    }, 500);
+    
+    return () => clearTimeout(timer);
+  }, [toast]); // Only run on mount
+  
+  // Get all applications
+  const allApplications = applications;
   
   // Filter applications based on search term
   const filteredApplications = allApplications.filter(app => 
@@ -44,38 +68,13 @@ export function useSoftwareData() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10);
 
-  // Initialize data with logging
-  useEffect(() => {
-    console.log("Software data hook initializing...");
-    
-    // Simulate a data loading delay - this helps ensure components mount properly
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-      setInitialized(true);
-      
-      console.log("Software data loaded successfully:", {
-        timestamp: new Date().toISOString(),
-        totalApps: allApplications.length,
-        uniqueApps: Object.keys(appCounts).length,
-        topAppCount: topApps.length,
-        deviceCount: devices.length
-      });
-      
-      toast({
-        title: "Software Data Loaded",
-        description: `Loaded ${allApplications.length} applications across ${devices.length} devices.`,
-      });
-    }, 800); // Slightly longer delay to ensure UI is ready
-    
-    return () => clearTimeout(timer);
-  }, [toast]);
-
   // Log whenever filtered results change
   useEffect(() => {
     if (initialized) {
       console.log("Search results updated:", {
         searchTerm,
-        resultCount: filteredApplications.length
+        resultCount: filteredApplications.length,
+        initialized
       });
     }
   }, [searchTerm, filteredApplications.length, initialized]);

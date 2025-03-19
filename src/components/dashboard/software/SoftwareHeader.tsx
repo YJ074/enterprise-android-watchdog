@@ -9,6 +9,8 @@ interface SoftwareHeaderProps {
 }
 
 export function SoftwareHeader({ searchTerm, setSearchTerm }: SoftwareHeaderProps) {
+  console.log("Rendering SoftwareHeader with searchTerm:", searchTerm);
+  
   return (
     <div className="w-full">
       <h2 className="text-xl font-semibold flex items-center mb-4">
@@ -21,7 +23,10 @@ export function SoftwareHeader({ searchTerm, setSearchTerm }: SoftwareHeaderProp
           placeholder="Search applications..."
           className="pl-8"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+            console.log("Search changed:", e.target.value);
+            setSearchTerm(e.target.value);
+          }}
         />
       </div>
     </div>

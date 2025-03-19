@@ -1,11 +1,15 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 
 export function ComplianceAlert() {
+  useEffect(() => {
+    console.log("ComplianceAlert component mounted");
+  }, []);
+
   return (
-    <Alert className="bg-amber-50 border-amber-200 shadow-md mb-4">
+    <Alert className="bg-amber-50 border-2 border-amber-200 shadow-md mb-6">
       <AlertTriangle className="h-4 w-4 text-amber-600" />
       <AlertTitle className="text-amber-800 font-semibold">Software Compliance Notice</AlertTitle>
       <AlertDescription className="text-amber-700">
