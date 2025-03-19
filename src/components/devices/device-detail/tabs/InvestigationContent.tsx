@@ -9,6 +9,7 @@ import { Search, PlusCircle } from "lucide-react";
 import { LogTypeSelector } from "@/components/investigation/LogTypeSelector";
 import { DateRangePicker } from "@/components/investigation/DateRangePicker";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { InvestigationSearchForm } from "@/components/investigation/form-fields/InvestigationSearchForm";
 
 interface InvestigationContentProps {
   deviceId: string;
