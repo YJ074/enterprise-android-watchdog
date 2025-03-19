@@ -15,10 +15,9 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import DevicesPage from "./pages/DevicesPage";
 import DeviceDetailPage from "./pages/DeviceDetailPage";
 import MdmProfilesPage from "./pages/MdmProfilesPage";
-import ComputerMdmPage from "./pages/ComputerMdmPage"; // New MDM page
-import InvestigationPage from "./pages/InvestigationPage"; // Investigation page
+import ComputerMdmPage from "./pages/ComputerMdmPage";
+import InvestigationPage from "./pages/InvestigationPage";
 import NotFound from "./pages/NotFound";
-import "./App.css";
 import Index from "./pages/Index";
 import UsersPage from "./pages/UsersPage";
 import UserDetailPage from "./pages/UserDetailPage";
@@ -34,6 +33,7 @@ const queryClient = new QueryClient({
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
     },
   },
 });

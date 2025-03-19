@@ -5,6 +5,7 @@ import { ActivityTab } from "./tabs/ActivityTab";
 import { MonitoringTab } from "./tabs/MonitoringTab";
 import { PoliciesTab } from "./tabs/PoliciesTab";
 import { ProfilesTab } from "./tabs/ProfilesTab";
+import { InvestigationTab } from "./tabs/InvestigationTab";
 
 type DeviceTabsProps = {
   deviceId: string;
@@ -19,6 +20,7 @@ export function DeviceTabs({ deviceId }: DeviceTabsProps) {
         <TabsTrigger value="profiles">Profiles</TabsTrigger>
         <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
         <TabsTrigger value="policies">Policies</TabsTrigger>
+        <TabsTrigger value="investigation">Investigation</TabsTrigger>
       </TabsList>
       
       <TabsContent value="apps">
@@ -39,6 +41,10 @@ export function DeviceTabs({ deviceId }: DeviceTabsProps) {
       
       <TabsContent value="policies">
         <PoliciesTab />
+      </TabsContent>
+      
+      <TabsContent value="investigation">
+        <InvestigationTab deviceId={deviceId} />
       </TabsContent>
     </Tabs>
   );
