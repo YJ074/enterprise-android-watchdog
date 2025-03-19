@@ -1,13 +1,19 @@
 
 import { useState } from "react";
-import { generateHistoricalData, generateForecastData, ChartDataPoint } from "./useHistoricalData";
+import { 
+  generateHistoricalData, 
+  generateForecastData, 
+  ChartDataPoint,
+  forecastRanges
+} from "./useHistoricalData";
 
 export function useHistoricalChart() {
   const [timeRange, setTimeRange] = useState(30);
   const [showForecast, setShowForecast] = useState(true);
+  const [forecastDays, setForecastDays] = useState(7);
   
   const historicalData = generateHistoricalData(timeRange);
-  const forecastData = generateForecastData(7);
+  const forecastData = generateForecastData(forecastDays);
   
   // Combine historical and forecast data
   const combinedData = showForecast 
@@ -25,6 +31,9 @@ export function useHistoricalChart() {
     historicalData,
     forecastData,
     combinedData,
-    forecastStartIndex
+    forecastStartIndex,
+    forecastDays,
+    setForecastDays,
+    forecastRanges
   };
 }

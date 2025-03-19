@@ -12,7 +12,9 @@ export function HistoricalTrendsChart() {
     showForecast,
     setShowForecast,
     combinedData,
-    forecastStartIndex
+    forecastStartIndex,
+    forecastDays,
+    setForecastDays,
   } = useHistoricalChart();
   
   return (
@@ -22,8 +24,10 @@ export function HistoricalTrendsChart() {
         <ChartConfig 
           timeRange={timeRange}
           showForecast={showForecast}
+          forecastDays={forecastDays}
           onTimeRangeChange={setTimeRange}
           onForecastToggle={setShowForecast}
+          onForecastDaysChange={setForecastDays}
         />
       </CardHeader>
       <CardContent>

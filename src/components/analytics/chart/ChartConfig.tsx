@@ -1,23 +1,29 @@
 
 import React from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { timeRanges } from "./useHistoricalData";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { timeRanges, forecastRanges } from "./useHistoricalData";
 
 interface ChartConfigProps {
   timeRange: number;
   showForecast: boolean;
+  forecastDays?: number;
   onTimeRangeChange: (value: number) => void;
   onForecastToggle: (show: boolean) => void;
+  onForecastDaysChange?: (days: number) => void;
 }
 
 export function ChartConfig({ 
   timeRange, 
   showForecast, 
+  forecastDays = 7,
   onTimeRangeChange, 
-  onForecastToggle 
+  onForecastToggle,
+  onForecastDaysChange
 }: ChartConfigProps) {
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-wrap gap-4 items-center">
       <Select 
         value={timeRange.toString()} 
         onValueChange={(value) => onTimeRangeChange(parseInt(value))}
@@ -33,16 +39,33 @@ export function ChartConfig({
           ))}
         </SelectContent>
       </Select>
-      <div className="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          id="showForecast"
+      
+      <div className="flex items-center space-x-3">
+        <Switch 
+          id="showForecast" 
           checked={showForecast}
-          onChange={(e) => onForecastToggle(e.target.checked)}
-          className="rounded border-gray-300"
+          onCheckedChange={onForecastToggle}
         />
-        <label htmlFor="showForecast" className="text-sm">Show 7-day Forecast</label>
+        <Label htmlFor="showForecast">Show Forecast</Label>
       </div>
+      
+      {showForecast && onForecastDaysChange && (
+        <Select 
+          value={forecastDays.toString()} 
+          onValueChange={(value) => onForecastDaysChange(parseInt(value))}
+        >
+          <SelectTrigger className="w-[160px]">
+            <SelectValue placeholder="Forecast period" />
+          </SelectTrigger>
+          <SelectContent>
+            {forecastRanges.map((range) => (
+              <SelectItem key={range.value} value={range.value.toString()}>
+                {range.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
     </div>
   );
 }

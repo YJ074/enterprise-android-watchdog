@@ -18,6 +18,13 @@ export const timeRanges = [
   { label: "Last 90 Days", value: 90 }
 ];
 
+// Forecast ranges for the dropdown
+export const forecastRanges = [
+  { label: "7 Days", value: 7 },
+  { label: "14 Days", value: 14 },
+  { label: "30 Days", value: 30 }
+];
+
 // Generate historical data based on current metrics
 export const generateHistoricalData = (days: number): ChartDataPoint[] => {
   const data = [];
